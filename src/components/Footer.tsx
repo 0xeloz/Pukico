@@ -1,7 +1,9 @@
 import React from 'react';
 import { DISCORD_INVITE_URL, X_URL } from '../config';
+import { useT } from '../i18n';
 
 export const Footer: React.FC = () => {
+  const { t } = useT();
   const hasLinks = Boolean(DISCORD_INVITE_URL || X_URL);
 
   return (
@@ -10,10 +12,10 @@ export const Footer: React.FC = () => {
         {/* Left: Brand note */}
         <div className="text-center sm:text-left space-y-1">
           <p className="text-sm font-semibold text-[#0A0B0D]">
-            Dibikin sambil dengerin masukan kalian di Discord.
+            {t.footer.feedback}
           </p>
           <p className="text-xs text-[#5B6577]">
-            Beta di Base Sepolia testnet. Bukan nasihat keuangan.
+            {t.footer.disclaimer}
           </p>
         </div>
 
@@ -27,7 +29,7 @@ export const Footer: React.FC = () => {
                 rel="noopener noreferrer"
                 className="btn min-h-[44px] inline-flex items-center text-sm font-medium text-[#3B4455] hover:text-[#0052FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 rounded-md px-2 py-1"
               >
-                Discord
+                {t.footer.discord}
               </a>
             )}
             {X_URL && (
@@ -37,7 +39,7 @@ export const Footer: React.FC = () => {
                 rel="noopener noreferrer"
                 className="btn min-h-[44px] inline-flex items-center text-sm font-medium text-[#3B4455] hover:text-[#0052FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 rounded-md px-2 py-1"
               >
-                X
+                {t.footer.x}
               </a>
             )}
           </div>

@@ -1,28 +1,31 @@
 import React from 'react';
 import { Reveal } from './Reveal';
-
-const blocks = [
-  {
-    title: 'ID permanen.',
-    desc: 'Sekali jadi punya kamu, gak ada yang bisa ambil. Gak bisa diganti juga, jadi pilih yang beneran kamu banget.',
-  },
-  {
-    title: 'Konfirmasi dulu, baru kirim.',
-    desc: 'Sebelum tanda tangan, kamu liat siapa penerimanya, berapa jumlahnya, dan berapa biaya gasnya.',
-  },
-  {
-    title: 'Status apa adanya.',
-    desc: 'Masih diproses ya ditulis diproses. Gagal ya ditulis gagal. Kami gak bilang sukses sebelum beneran sukses di blockchain.',
-  },
-];
+import { useT } from '../i18n';
 
 export const DifferentiatorSection: React.FC = () => {
+  const { t } = useT();
+
+  const blocks = [
+    {
+      title: t.diff.block1Title,
+      desc: t.diff.block1Desc,
+    },
+    {
+      title: t.diff.block2Title,
+      desc: t.diff.block2Desc,
+    },
+    {
+      title: t.diff.block3Title,
+      desc: t.diff.block3Desc,
+    },
+  ];
+
   return (
     <section className="py-16 sm:py-24 border-t border-[#E5E7EB] bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <Reveal className="max-w-2xl mb-10">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#0A0B0D] tracking-tight">
-            Yang bikin beda
+            {t.diff.title}
           </h2>
         </Reveal>
 

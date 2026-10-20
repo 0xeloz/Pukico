@@ -1,31 +1,34 @@
 import React from 'react';
 import { Reveal } from './Reveal';
-
-const steps = [
-  {
-    number: '1',
-    title: 'Amanin Pukico ID',
-    desc: 'Pilih username kamu. Sekali diklaim, gak bisa diganti atau dihapus.',
-  },
-  {
-    number: '2',
-    title: 'Masuk pakai email',
-    desc: 'Dompet kamu dibuat lewat Privy. Kami gak nyimpen private key kamu di database kami.',
-  },
-  {
-    number: '3',
-    title: 'Kirim dan terima pakai @',
-    desc: 'Alamat 0x tetap ada kalau kamu butuh buat kirim dari atau ke wallet lain.',
-  },
-];
+import { useT } from '../i18n';
 
 export const HowItWorksSection: React.FC = () => {
+  const { t } = useT();
+
+  const steps = [
+    {
+      number: '1',
+      title: t.how.step1Title,
+      desc: t.how.step1Desc,
+    },
+    {
+      number: '2',
+      title: t.how.step2Title,
+      desc: t.how.step2Desc,
+    },
+    {
+      number: '3',
+      title: t.how.step3Title,
+      desc: t.how.step3Desc,
+    },
+  ];
+
   return (
     <section className="py-16 sm:py-24 border-t border-[#DBE6FF] bg-[#EEF4FF]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <Reveal className="max-w-2xl mb-10">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#0A0B0D] tracking-tight">
-            Cara kerjanya
+            {t.how.title}
           </h2>
         </Reveal>
 

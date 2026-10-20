@@ -1,6 +1,6 @@
 {
   "name": "Pukico",
-  "description": "Landing page waitlist Pukico - wallet crypto pemula pakai username di Base Sepolia testnet.",
+  "description": "A beginner-friendly crypto wallet. Send and receive with a username (Pukico ID, like @andika), not a long 0x address. Join the waitlist.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }

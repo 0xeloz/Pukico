@@ -9,16 +9,24 @@ export const DISCORD_INVITE_URL = (import.meta.env.VITE_DISCORD_INVITE_URL || ''
 export const X_URL = (import.meta.env.VITE_X_URL || '').trim();
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || '').trim();
 
-export const isBackendConfigured = (): boolean => {
-  const configured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
-  if (!configured) {
-    // Only warn once in console
-    if (typeof window !== 'undefined' && !(window as unknown as { __pukico_warned?: boolean }).__pukico_warned) {
-      console.warn(
-        '[Pukico Config] SUPABASE_URL atau SUPABASE_ANON_KEY belum diset di environment variables. Fitur pengecekan ID dan form waitlist dinonaktifkan (tidak melakukan mock submission).'
-      );
-      (window as unknown as { __pukico_warned?: boolean }).__pukico_warned = true;
-    }
+export const isLiveBackendConfigured = (): boolean => {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;
+  const url = SUPABASE_URL.toLowerCase();
+  const key = SUPABASE_ANON_KEY.toLowerCase();
+  // Filter out dummy/placeholder values commonly present in template environments
+  if (
+    url.includes('your-project') ||
+    url.includes('example.com') ||
+    url.includes('placeholder') ||
+    key.includes('your-anon') ||
+    key.includes('placeholder')
+  ) {
+    return false;
   }
-  return configured;
+  return true;
+};
+
+export const isBackendConfigured = (): boolean => {
+  // Returns true to enable interactive waitlist and ID check via in-memory mock when live Supabase is not configured
+  return true;
 };

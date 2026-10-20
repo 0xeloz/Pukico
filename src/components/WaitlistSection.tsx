@@ -6,14 +6,17 @@ import {
   checkUsernameApi,
   joinWaitlistApi,
   EMAIL_REGEX,
+  JoinWaitlistErrorType,
 } from '../services/api';
 import { isBackendConfigured, DISCORD_INVITE_URL } from '../config';
+import { useT } from '../i18n';
 
 interface WaitlistSectionProps {
   initialId?: string;
 }
 
 export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = '' }) => {
+  const { t, format } = useT();
   const [email, setEmail] = useState('');
   const [desiredId, setDesiredId] = useState(initialId);
   const [websiteHoneypot, setWebsiteHoneypot] = useState('');
@@ -21,6 +24,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
   // ID validation & live check state
   const [idStatus, setIdStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'format_error'>('idle');
   const [idMessage, setIdMessage] = useState('');
+  const [checkedId, setCheckedId] = useState('');
 
   // Retain last ID feedback message and status for smooth collapsing transition
   const [lastIdMessage, setLastIdMessage] = useState('');
@@ -31,6 +35,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
   const [isSuccess, setIsSuccess] = useState(false);
   const [submittedWithId, setSubmittedWithId] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [submitErrorCode, setSubmitErrorCode] = useState<JoinWaitlistErrorType | null>(null);
 
   const backendReady = isBackendConfigured();
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -52,6 +57,36 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
     }
   }, [idMessage, idStatus]);
 
+  // Update messages when language changes
+  useEffect(() => {
+    if (idStatus === 'available' && checkedId) {
+      setIdMessage(format(t.hero.available, { id: checkedId }));
+    } else if (idStatus === 'taken' && checkedId) {
+      setIdMessage(format(t.hero.taken, { id: checkedId }));
+    } else if (idStatus === 'format_error') {
+      setIdMessage(t.waitlist.errors.invalidId);
+    } else if (idStatus === 'checking') {
+      setIdMessage(t.waitlist.checking);
+    }
+
+    if (submitErrorCode) {
+      const cleanId = desiredId.trim() ? sanitizeUsername(desiredId) : undefined;
+      if (submitErrorCode === 'email_exists') {
+        setSubmitError(t.waitlist.errors.emailExists);
+      } else if (submitErrorCode === 'id_taken' || submitErrorCode === 'reserved') {
+        setSubmitError(
+          cleanId ? format(t.waitlist.errors.idTaken, { id: cleanId }) : t.waitlist.errors.idTakenFallback
+        );
+      } else if (submitErrorCode === 'invalid_email') {
+        setSubmitError(t.waitlist.errors.invalidEmail);
+      } else if (submitErrorCode === 'invalid_id') {
+        setSubmitError(t.waitlist.errors.invalidId);
+      } else {
+        setSubmitError(t.waitlist.errors.server);
+      }
+    }
+  }, [t, format, idStatus, checkedId, submitErrorCode, desiredId]);
+
   const isIdFeedbackOpen = Boolean(idMessage);
 
   const triggerIdCheck = (idToTest: string) => {
@@ -63,13 +98,15 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
     if (!clean) {
       setIdStatus('idle');
       setIdMessage('');
+      setCheckedId('');
       return;
     }
 
     const localCheck = validateUsernameLocally(clean);
     if (!localCheck.valid) {
       setIdStatus('format_error');
-      setIdMessage('Format salah. Hanya boleh huruf kecil (a-z), angka (0-9), dan garis bawah (_), 3-20 karakter.');
+      setIdMessage(t.waitlist.errors.invalidId);
+      setCheckedId(clean);
       return;
     }
 
@@ -81,7 +118,8 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
 
     const reqId = ++checkCountRef.current;
     setIdStatus('checking');
-    setIdMessage('Mengecek ketersediaan...');
+    setIdMessage(t.waitlist.checking);
+    setCheckedId(clean);
 
     debounceTimerRef.current = setTimeout(async () => {
       const res = await checkUsernameApi(clean);
@@ -90,13 +128,13 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
       }
       if (res.available) {
         setIdStatus('available');
-        setIdMessage(`@${clean} tersedia!`);
+        setIdMessage(format(t.hero.available, { id: clean }));
       } else if (res.reason === 'taken' || res.reason === 'reserved') {
         setIdStatus('taken');
-        setIdMessage(`@${clean} udah diambil, coba yang lain`);
+        setIdMessage(format(t.hero.taken, { id: clean }));
       } else if (res.reason === 'format') {
         setIdStatus('format_error');
-        setIdMessage(res.errorMessage || 'Format salah. Hanya boleh huruf kecil, angka, dan garis bawah (_).');
+        setIdMessage(t.waitlist.errors.invalidId);
       } else {
         setIdStatus('idle');
         setIdMessage('');
@@ -118,6 +156,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
     const clean = sanitizeUsername(raw);
     setDesiredId(clean);
     setSubmitError('');
+    setSubmitErrorCode(null);
     checkCountRef.current += 1;
     triggerIdCheck(clean);
   };
@@ -125,13 +164,15 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     setSubmitError('');
+    setSubmitErrorCode(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError('');
+    setSubmitErrorCode(null);
 
-    // Honeypot check: kalau terisi, tampilkan state sukses palsu langsung tanpa memanggil API
+    // Honeypot check: if filled, show fake success without calling API
     if (websiteHoneypot && websiteHoneypot.trim().length > 0) {
       setSubmittedWithId(Boolean(desiredId.trim()));
       setIsSuccess(true);
@@ -139,13 +180,15 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
     }
 
     if (!backendReady) {
-      setSubmitError('Lagi ada masalah di sisi kami. Coba lagi bentar ya.');
+      setSubmitErrorCode('server');
+      setSubmitError(t.waitlist.errors.server);
       return;
     }
 
     const cleanEmail = email.trim();
     if (!cleanEmail || !EMAIL_REGEX.test(cleanEmail)) {
-      setSubmitError('Masukkan alamat email yang valid.');
+      setSubmitErrorCode('invalid_email');
+      setSubmitError(t.waitlist.errors.invalidEmail);
       return;
     }
 
@@ -153,11 +196,13 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
     if (cleanId) {
       const idCheck = validateUsernameLocally(cleanId);
       if (!idCheck.valid) {
-        setSubmitError('Format ID salah. Hanya boleh huruf kecil, angka, dan garis bawah (_), 3-20 karakter.');
+        setSubmitErrorCode('invalid_id');
+        setSubmitError(t.waitlist.errors.invalidId);
         return;
       }
       if (idStatus === 'taken') {
-        setSubmitError(`@${cleanId} udah diambil orang lain, coba yang lain.`);
+        setSubmitErrorCode('id_taken');
+        setSubmitError(format(t.waitlist.errors.idTaken, { id: cleanId }));
         return;
       }
     }
@@ -176,12 +221,20 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
       setSubmittedWithId(Boolean(cleanId));
       setIsSuccess(true);
     } else {
-      if (res.error === 'email_exists') {
-        setSubmitError('Email ini udah masuk waitlist, aman.');
-      } else if (res.error === 'id_taken' || res.error === 'reserved') {
-        setSubmitError(cleanId ? `@${cleanId} udah diambil orang lain, coba yang lain.` : 'ID diambil.');
+      const err = res.error || 'server';
+      setSubmitErrorCode(err);
+      if (err === 'email_exists') {
+        setSubmitError(t.waitlist.errors.emailExists);
+      } else if (err === 'id_taken' || err === 'reserved') {
+        setSubmitError(
+          cleanId ? format(t.waitlist.errors.idTaken, { id: cleanId }) : t.waitlist.errors.idTakenFallback
+        );
+      } else if (err === 'invalid_email') {
+        setSubmitError(t.waitlist.errors.invalidEmail);
+      } else if (err === 'invalid_id') {
+        setSubmitError(t.waitlist.errors.invalidId);
       } else {
-        setSubmitError(res.message || 'Lagi ada masalah di sisi kami. Coba lagi bentar ya.');
+        setSubmitError(t.waitlist.errors.server);
       }
     }
   };
@@ -191,7 +244,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
       <div className="max-w-xl mx-auto px-4 sm:px-6">
         <Reveal delay={0} className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            Masuk waitlist, amanin ID kamu.
+            {t.waitlist.title}
           </h2>
         </Reveal>
 
@@ -202,15 +255,15 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
               <div className="flex items-center gap-2.5">
                 <span className="w-3 h-3 rounded-full bg-[#10B981] shrink-0 animate-scale-in" aria-hidden="true" />
                 <h3 className="text-lg font-bold text-[#047857]">
-                  Udah masuk.
+                  {t.waitlist.successTitle}
                 </h3>
               </div>
               <p className="text-sm sm:text-base text-[#3B4455] leading-relaxed">
-                Kamu bakal kami kabarin pas beta dibuka. Biar gak ketinggalan, gabung Discord-nya sekarang.
+                {t.waitlist.successText}
               </p>
               {!submittedWithId && (
                 <p className="text-sm text-[#5B6577] leading-relaxed">
-                  Kamu belum amanin Pukico ID. Masih bisa kok: isi form ini lagi pakai email yang sama plus ID incaran kamu.
+                  {t.waitlist.noIdNote}
                 </p>
               )}
               {DISCORD_INVITE_URL && (
@@ -221,7 +274,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                     rel="noopener noreferrer"
                     className="btn min-h-[44px] px-5 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] text-white text-sm font-semibold inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
                   >
-                    Gabung Discord
+                    {t.waitlist.successButton}
                   </a>
                 </div>
               )}
@@ -229,19 +282,10 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
           ) : (
             /* Form State */
             <form onSubmit={handleSubmit} className="space-y-5">
-              {!backendReady && (
-                <div className="p-3.5 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-xs text-[#B45309]">
-                  <p className="font-semibold">Perhatian:</p>
-                  <p className="mt-0.5">
-                    Konfigurasi backend belum diset di environment variables. Form tidak dapat mengirim data live.
-                  </p>
-                </div>
-              )}
-
               {/* Email field (wajib) */}
               <div>
                 <label htmlFor="waitlist-email" className="block text-xs font-semibold text-[#3B4455]">
-                  Email <span className="text-[#B91C1C]">*</span>
+                  {t.waitlist.emailLabel} <span className="text-[#B91C1C]">*</span>
                 </label>
                 <input
                   id="waitlist-email"
@@ -261,10 +305,10 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
               <div>
                 <div className="flex items-center justify-between">
                   <label htmlFor="waitlist-id" className="block text-xs font-semibold text-[#3B4455]">
-                    Pukico ID incaran <span className="text-[#5B6577] font-normal">(opsional)</span>
+                    {t.waitlist.idLabel} <span className="text-[#5B6577] font-normal">{t.waitlist.optional}</span>
                   </label>
                   {idStatus === 'checking' && (
-                    <span className="text-xs text-[#5B6577]">Mengecek...</span>
+                    <span className="text-xs text-[#5B6577]">{t.waitlist.checking}</span>
                   )}
                 </div>
 
@@ -340,7 +384,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
               {submitError && (
                 <div
                   className={`p-3 rounded-xl text-xs sm:text-sm font-medium border ${
-                    submitError.includes('udah masuk waitlist')
+                    submitErrorCode === 'email_exists'
                       ? 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]'
                       : 'bg-[#FEF2F2] text-[#B91C1C] border-[#FECACA]'
                   }`}
@@ -356,7 +400,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                 disabled={isSubmitting || !backendReady}
                 className="btn w-full min-h-[48px] px-6 py-3 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] disabled:bg-[#0052FF]/40 disabled:cursor-not-allowed text-white text-sm font-semibold flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
               >
-                {isSubmitting ? 'Mengirim data...' : 'Masuk Waitlist'}
+                {isSubmitting ? t.waitlist.submitting : t.waitlist.button}
               </button>
             </form>
           )}

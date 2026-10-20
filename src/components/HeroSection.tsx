@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ProductPreview } from './ProductPreview';
 import { Reveal } from './Reveal';
 import { sanitizeUsername, validateUsernameLocally, checkUsernameApi } from '../services/api';
-import { isBackendConfigured } from '../config';
+import { useT } from '../i18n';
 
 interface HeroSectionProps {
   onClaimId: (id: string) => void;
@@ -11,6 +11,7 @@ interface HeroSectionProps {
 type CheckStatus = 'idle' | 'checking' | 'available' | 'taken' | 'format_error' | 'server_error';
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
+  const { t, format } = useT();
   const [inputVal, setInputVal] = useState('');
   const [status, setStatus] = useState<CheckStatus>('idle');
   const [statusMsg, setStatusMsg] = useState('');
@@ -28,6 +29,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
       setLastStatus(status);
     }
   }, [statusMsg, status]);
+
+  // Sync status message if language changes while a status is displayed
+  useEffect(() => {
+    if (status === 'available' && checkedId) {
+      setStatusMsg(format(t.hero.available, { id: checkedId }));
+    } else if (status === 'taken' && checkedId) {
+      setStatusMsg(format(t.hero.taken, { id: checkedId }));
+    } else if (status === 'format_error') {
+      setStatusMsg(t.hero.format);
+    } else if (status === 'server_error') {
+      setStatusMsg(t.hero.serverError);
+    }
+  }, [t, format, status, checkedId]);
 
   const isStatusOpen = Boolean(statusMsg);
 
@@ -49,20 +63,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
 
     if (!clean) {
       setStatus('format_error');
-      setStatusMsg('Masukkan Pukico ID yang mau kamu cek.');
+      setStatusMsg(t.hero.empty);
       return;
     }
 
     const localVal = validateUsernameLocally(clean);
     if (!localVal.valid) {
       setStatus('format_error');
-      setStatusMsg('Format salah. Hanya boleh huruf kecil (a-z), angka (0-9), dan garis bawah (_), 3-20 karakter.');
-      return;
-    }
-
-    if (!isBackendConfigured()) {
-      setStatus('server_error');
-      setStatusMsg('Konfigurasi backend (SUPABASE_URL) belum diatur di environment.');
+      setStatusMsg(t.hero.format);
       return;
     }
 
@@ -79,16 +87,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
 
     if (res.available) {
       setStatus('available');
-      setStatusMsg(`@${clean} tersedia!`);
+      setStatusMsg(format(t.hero.available, { id: clean }));
     } else if (res.reason === 'taken' || res.reason === 'reserved') {
       setStatus('taken');
-      setStatusMsg(`@${clean} udah diambil, coba yang lain`);
+      setStatusMsg(format(t.hero.taken, { id: clean }));
     } else if (res.reason === 'format') {
       setStatus('format_error');
-      setStatusMsg(res.errorMessage || 'Format salah. Hanya boleh huruf kecil, angka, dan garis bawah (_), 3-20 karakter.');
+      setStatusMsg(t.hero.format);
     } else {
       setStatus('server_error');
-      setStatusMsg(res.errorMessage || 'Lagi ada masalah di sisi kami. Coba lagi bentar ya.');
+      setStatusMsg(t.hero.serverError);
     }
   };
 
@@ -108,21 +116,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
             <Reveal delay={0}>
               <div className="flex items-center gap-2 text-xs font-medium text-[#5B6577] mb-4">
                 <span className="w-2 h-2 rounded-full bg-[#10B981] shrink-0" aria-hidden="true" />
-                <span>Lagi waitlist · Beta di Base Sepolia (testnet)</span>
+                <span>{t.hero.kicker}</span>
               </div>
             </Reveal>
 
             {/* H1 - font-weight 700, tracking-tight, with #0052FF highlight - Reveal delay 80 */}
             <Reveal delay={80}>
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#0A0B0D] leading-[1.15] text-balance">
-                Kirim crypto <span className="text-[#0052FF]">semudah kirim duit ke temen</span>.
+                {t.hero.h1Prefix}
+                <span className="text-[#0052FF]">{t.hero.h1Highlight}</span>
+                {t.hero.h1Suffix}
               </h1>
             </Reveal>
 
             {/* Sub - Reveal delay 160 */}
             <Reveal delay={160}>
               <p className="mt-5 text-base sm:text-lg text-[#3B4455] leading-relaxed max-w-xl">
-                Gak perlu hafalin alamat 0x yang panjangnya kayak kode rahasia. Cukup pakai Pukico ID, contohnya @andika, beres.
+                {t.hero.sub}
               </p>
             </Reveal>
 
@@ -141,14 +151,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                       type="text"
                       value={inputVal}
                       onChange={handleInputChange}
-                      placeholder="andika"
+                      placeholder={t.hero.placeholder}
                       autoCapitalize="none"
                       autoCorrect="off"
                       autoComplete="off"
                       enterKeyHint="go"
                       spellCheck="false"
                       className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#DBE6FF] text-[#3B4455] placeholder:text-[#5B6577]/60 text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent transition-all"
-                      aria-label="Ketik Pukico ID yang mau dicek"
+                      aria-label={t.hero.inputAriaLabel}
                     />
                   </div>
 
@@ -158,7 +168,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                       onClick={handleClaim}
                       className="btn min-h-[48px] px-6 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] text-white text-sm font-semibold flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
                     >
-                      Amanin @{checkedId}
+                      {format(t.hero.claimButton, { id: checkedId })}
                     </button>
                   ) : (
                     <button
@@ -166,7 +176,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                       disabled={status === 'checking'}
                       className="btn min-h-[48px] px-6 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] disabled:bg-[#0052FF]/40 disabled:cursor-not-allowed text-white text-sm font-semibold flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
                     >
-                      {status === 'checking' ? 'Mengecek...' : 'Cek ID kamu'}
+                      {status === 'checking' ? t.hero.checking : t.hero.check}
                     </button>
                   )}
                 </div>
@@ -217,7 +227,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                         onClick={handleClaim}
                         className="btn text-xs font-bold underline hover:no-underline text-[#047857] shrink-0"
                       >
-                        Klaim sekarang &darr;
+                        {t.hero.claimLink}
                       </button>
                     )}
                   </div>
@@ -226,7 +236,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
 
               {/* Small fine-print text below input */}
               <p className="mt-3 text-xs text-[#5B6577] leading-relaxed">
-                ID yang kamu amanin di waitlist dikunci buat kamu. Klaim finalnya tetap lewat proses resmi di Pukico pas beta dibuka.
+                {t.hero.finePrint}
               </p>
             </Reveal>
           </div>

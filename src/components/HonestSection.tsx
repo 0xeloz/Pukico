@@ -1,27 +1,23 @@
 import React from 'react';
 import { Reveal } from './Reveal';
-
-const honestPoints = [
-  'Ini masih testnet. Semua aset di beta gak ada nilai uang aslinya.',
-  'Transaksi blockchain tetap ada biaya jaringan (gas).',
-  'Transaksi bisa agak lama, bahkan bisa gagal. Makanya kami tampilin statusnya jelas.',
-  'Namanya juga beta, bakal ada bug. Laporin di Discord, kami baca.',
-];
+import { useT } from '../i18n';
 
 export const HonestSection: React.FC = () => {
+  const { t } = useT();
+
   return (
     <section className="py-16 sm:py-20 border-t border-[#E5E7EB] bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <Reveal className="rounded-2xl p-6 sm:p-10 bg-[#EEF4FF] border border-[#DBE6FF]">
           <h2 className="text-xl sm:text-2xl font-bold text-[#0A0B0D] tracking-tight">
-            Jujur dulu ya
+            {t.honest.title}
           </h2>
           <p className="mt-2 text-sm text-[#5B6577]">
-            Sebelum daftar, kamu perlu tau ini:
+            {t.honest.sub}
           </p>
 
           <ul className="mt-6 space-y-3.5">
-            {honestPoints.map((point) => (
+            {t.honest.points.map((point) => (
               <li
                 key={point}
                 className="flex items-start gap-3 text-sm sm:text-base text-[#3B4455] leading-relaxed"

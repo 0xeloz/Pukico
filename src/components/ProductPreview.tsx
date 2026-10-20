@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useInView } from '../hooks/useInView';
+import { useT } from '../i18n';
 
 const FULL_HANDLE = '@andika';
 
 export const ProductPreview: React.FC = () => {
   const { ref, isInView } = useInView<HTMLDivElement>();
+  const { t } = useT();
   const [typedHandle, setTypedHandle] = useState('');
   const [showAddress, setShowAddress] = useState(false);
   const [showChip, setShowChip] = useState(false);
@@ -72,7 +74,7 @@ export const ProductPreview: React.FC = () => {
           {/* Screen Content */}
           <div className="mt-4 space-y-3.5">
             <div>
-              <p className="text-[11px] font-medium text-[#5B6577]">Kirim ke</p>
+              <p className="text-[11px] font-medium text-[#5B6577]">{t.preview.sendTo}</p>
               <div className="mt-1.5 p-2.5 rounded-xl bg-[#EEF4FF] border border-[#DBE6FF] flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-8 h-8 rounded-full bg-[#0052FF] text-white flex items-center justify-center font-bold text-xs shrink-0 select-none">
@@ -117,7 +119,7 @@ export const ProductPreview: React.FC = () => {
                         : 'opacity-0 scale-[0.96]'
                     }`}
                   >
-                    ID ketemu
+                    {t.preview.idFound}
                   </span>
                 </div>
               </div>
@@ -125,27 +127,27 @@ export const ProductPreview: React.FC = () => {
 
             {/* Amount input block */}
             <div className="p-3 rounded-xl bg-white border border-[#E5E7EB]">
-              <span className="text-[10px] font-medium text-[#5B6577]">Jumlah kirim</span>
+              <span className="text-[10px] font-medium text-[#5B6577]">{t.preview.amount}</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-2xl font-bold tracking-tight text-[#0A0B0D] tabular-nums">15.00</span>
                 <span className="text-xs font-bold text-[#0052FF]">USDC</span>
               </div>
-              <p className="text-[10px] text-[#5B6577] mt-0.5">Testnet token (tidak bernilai asli)</p>
+              <p className="text-[10px] text-[#5B6577] mt-0.5">{t.preview.testTokenNote}</p>
             </div>
 
             {/* Transaction breakdown */}
             <div className="space-y-1.5 px-1 text-[11px] text-[#5B6577]">
               <div className="flex justify-between">
-                <span>Biaya gas</span>
+                <span>{t.preview.gasFee}</span>
                 <span className="font-mono text-[#3B4455] tabular-nums">~0.00004 ETH</span>
               </div>
               <div className="flex justify-between">
-                <span>Jaringan</span>
+                <span>{t.preview.network}</span>
                 <span className="font-medium text-[#3B4455]">Base Sepolia</span>
               </div>
               <div className="flex justify-between items-center pt-1 border-t border-[#E5E7EB]">
-                <span className="font-semibold text-[#3B4455]">Status</span>
-                <span className="text-[10px] font-semibold text-[#047857]">Siap dikonfirmasi</span>
+                <span className="font-semibold text-[#3B4455]">{t.preview.status}</span>
+                <span className="text-[10px] font-semibold text-[#047857]">{t.preview.readyToConfirm}</span>
               </div>
             </div>
 
@@ -162,7 +164,7 @@ export const ProductPreview: React.FC = () => {
                 buttonActive ? 'opacity-100' : 'opacity-50'
               }`}
             >
-              Konfirmasi &amp; Kirim
+              {t.preview.confirmAndSend}
             </button>
           </div>
         </div>
@@ -170,7 +172,7 @@ export const ProductPreview: React.FC = () => {
 
       {/* Required label below */}
       <p className="text-xs text-[#5B6577] mt-3 text-center">
-        Ilustrasi tampilan Pukico di browser, bukan data asli
+        {t.preview.label}
       </p>
     </div>
   );

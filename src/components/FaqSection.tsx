@@ -1,35 +1,9 @@
 import React, { useState } from 'react';
 import { Reveal } from './Reveal';
-
-interface FaqItem {
-  q: string;
-  a: string;
-}
-
-const faqs: FaqItem[] = [
-  {
-    q: 'Pukico itu apa sih?',
-    a: 'Wallet crypto yang bisa kirim dan terima pakai username, bukan alamat panjang.',
-  },
-  {
-    q: 'Beneran pakai duit?',
-    a: 'Belum. Beta cuma di Base Sepolia testnet, asetnya gak ada nilainya.',
-  },
-  {
-    q: 'Pukico ID bisa diganti?',
-    a: 'Gak bisa. Sekali diklaim, permanen. Jadi pikirin dulu.',
-  },
-  {
-    q: 'Kalau ganti HP, dompetku hilang?',
-    a: 'Kamu bisa pulihin lewat login dan mekanisme pemulihan Privy. Kami bakal uji ini serius di beta.',
-  },
-  {
-    q: 'Kapan beta dibuka?',
-    a: 'Belum ada tanggal pasti. Kabar terbaru kami taruh di Discord.',
-  },
-];
+import { useT } from '../i18n';
 
 export const FaqSection: React.FC = () => {
+  const { t } = useT();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggle = (idx: number) => {
@@ -41,13 +15,13 @@ export const FaqSection: React.FC = () => {
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <Reveal delay={0} className="mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold text-[#0A0B0D] tracking-tight">
-            Yang sering ditanyain
+            {t.faq.title}
           </h2>
         </Reveal>
 
         {/* Separated by thin lines instead of cards */}
         <div className="divide-y divide-[#E5E7EB] border-y border-[#E5E7EB]">
-          {faqs.map((faq, idx) => {
+          {t.faq.items.map((faq, idx) => {
             const isOpen = openIndex === idx;
             const buttonId = `faq-btn-${idx}`;
             const panelId = `faq-panel-${idx}`;

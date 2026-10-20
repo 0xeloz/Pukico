@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LangProvider } from './i18n';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { WhySection } from './components/WhySection';
@@ -8,6 +9,7 @@ import { HonestSection } from './components/HonestSection';
 import { WaitlistSection } from './components/WaitlistSection';
 import { FaqSection } from './components/FaqSection';
 import { Footer } from './components/Footer';
+
 export default function App() {
   const [claimedId, setClaimedId] = useState('');
 
@@ -31,20 +33,22 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#3B4455] flex flex-col font-sans">
-      <Navbar onScrollToWaitlist={scrollToWaitlist} />
+    <LangProvider>
+      <div className="min-h-screen bg-white text-[#3B4455] flex flex-col font-sans">
+        <Navbar onScrollToWaitlist={scrollToWaitlist} />
 
-      <main className="flex-1">
-        <HeroSection onClaimId={handleClaimIdFromHero} />
-        <WhySection />
-        <HowItWorksSection />
-        <DifferentiatorSection />
-        <HonestSection />
-        <WaitlistSection initialId={claimedId} />
-        <FaqSection />
-      </main>
+        <main className="flex-1">
+          <HeroSection onClaimId={handleClaimIdFromHero} />
+          <WhySection />
+          <HowItWorksSection />
+          <DifferentiatorSection />
+          <HonestSection />
+          <WaitlistSection initialId={claimedId} />
+          <FaqSection />
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </LangProvider>
   );
 }

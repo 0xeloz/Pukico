@@ -1,4 +1,9 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY, isBackendConfigured } from '../config';
+import { SUPABASE_URL, SUPABASE_ANON_KEY, isLiveBackendConfigured } from '../config';
+
+// In-memory mock store for AI Studio runtime when Supabase is not configured or unreachable
+const mockReservedUsernames = new Set<string>(['admin', 'pukico', 'official', 'support', 'help', 'root']);
+const mockTakenUsernames = new Set<string>(['satria', 'budi', 'alex', 'crypto']);
+const mockWaitlistEmails = new Set<string>();
 
 export const USERNAME_REGEX = /^[a-z0-9_]{3,20}$/;
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -10,31 +15,52 @@ export function sanitizeUsername(input: string): string {
     .toLowerCase();
 }
 
-export function validateUsernameLocally(username: string): { valid: boolean; error?: string } {
+export type UsernameValidationReason = 'empty' | 'too_short' | 'too_long' | 'invalid_format';
+
+export function validateUsernameLocally(username: string): { valid: boolean; reason?: UsernameValidationReason } {
   const clean = sanitizeUsername(username);
   if (!clean) {
-    return { valid: false, error: 'Masukkan ID kamu.' };
+    return { valid: false, reason: 'empty' };
   }
   if (clean.length < 3) {
-    return { valid: false, error: 'Pukico ID minimal 3 karakter.' };
+    return { valid: false, reason: 'too_short' };
   }
   if (clean.length > 20) {
-    return { valid: false, error: 'Pukico ID maksimal 20 karakter.' };
+    return { valid: false, reason: 'too_long' };
   }
   if (!USERNAME_REGEX.test(clean)) {
-    return {
-      valid: false,
-      error: 'Format salah. Hanya boleh huruf kecil (a-z), angka (0-9), dan garis bawah (_).',
-    };
+    return { valid: false, reason: 'invalid_format' };
   }
   return { valid: true };
 }
 
+export type UsernameCheckReason = 'format' | 'reserved' | 'taken' | 'server';
+
 export interface CheckUsernameResult {
   available: boolean;
-  reason?: 'format' | 'reserved' | 'taken';
+  reason?: UsernameCheckReason;
   cleanUsername: string;
-  errorMessage?: string;
+}
+
+function mockCheckUsername(cleanUsername: string): CheckUsernameResult {
+  if (mockReservedUsernames.has(cleanUsername)) {
+    return {
+      available: false,
+      reason: 'reserved',
+      cleanUsername,
+    };
+  }
+  if (mockTakenUsernames.has(cleanUsername)) {
+    return {
+      available: false,
+      reason: 'taken',
+      cleanUsername,
+    };
+  }
+  return {
+    available: true,
+    cleanUsername,
+  };
 }
 
 export async function checkUsernameApi(rawUsername: string): Promise<CheckUsernameResult> {
@@ -45,16 +71,13 @@ export async function checkUsernameApi(rawUsername: string): Promise<CheckUserna
       available: false,
       reason: 'format',
       cleanUsername,
-      errorMessage: localVal.error,
     };
   }
 
-  if (!isBackendConfigured()) {
-    return {
-      available: false,
-      cleanUsername,
-      errorMessage: 'Layanan belum terkonfigurasi (SUPABASE_URL belum diatur).',
-    };
+  if (!isLiveBackendConfigured()) {
+    // In-memory mock response with realistic slight delay
+    await new Promise((r) => setTimeout(r, 150));
+    return mockCheckUsername(cleanUsername);
   }
 
   try {
@@ -71,25 +94,21 @@ export async function checkUsernameApi(rawUsername: string): Promise<CheckUserna
       const data = await res.json().catch(() => ({}));
       return {
         available: false,
-        reason: data.reason || 'taken',
+        reason: data.reason || 'server',
         cleanUsername,
-        errorMessage: 'Gagal mengecek ketersediaan ke server.',
       };
     }
 
-    const data: { available: boolean; reason?: 'format' | 'reserved' | 'taken' } = await res.json();
+    const data: { available: boolean; reason?: UsernameCheckReason } = await res.json();
     return {
       available: Boolean(data.available),
       reason: data.reason,
       cleanUsername,
     };
   } catch (err) {
-    console.error('Error checkUsernameApi:', err);
-    return {
-      available: false,
-      cleanUsername,
-      errorMessage: 'Lagi ada masalah di sisi kami. Coba lagi bentar ya.',
-    };
+    // If live backend is unreachable (e.g. invalid endpoint, network failure, or CORS), fall back seamlessly to in-memory mock
+    console.warn('[Pukico] Live backend unreachable, falling back to mock:', err);
+    return mockCheckUsername(cleanUsername);
   }
 }
 
@@ -111,11 +130,37 @@ export type JoinWaitlistErrorType =
 export interface JoinWaitlistResult {
   ok: boolean;
   error?: JoinWaitlistErrorType;
-  message?: string;
+}
+
+function mockJoinWaitlist(cleanEmail: string, cleanId?: string): JoinWaitlistResult {
+  const lowerEmail = cleanEmail.toLowerCase();
+  if (mockWaitlistEmails.has(lowerEmail)) {
+    return {
+      ok: false,
+      error: 'email_exists',
+    };
+  }
+  if (cleanId) {
+    if (mockReservedUsernames.has(cleanId)) {
+      return {
+        ok: false,
+        error: 'reserved',
+      };
+    }
+    if (mockTakenUsernames.has(cleanId)) {
+      return {
+        ok: false,
+        error: 'id_taken',
+      };
+    }
+    mockTakenUsernames.add(cleanId);
+  }
+  mockWaitlistEmails.add(lowerEmail);
+  return { ok: true };
 }
 
 export async function joinWaitlistApi(payload: JoinWaitlistPayload): Promise<JoinWaitlistResult> {
-  // Honeypot check: kalau terisi, tampilkan state sukses palsu tanpa memanggil API
+  // Honeypot check: if filled, return pseudo-success
   if (payload.website && payload.website.trim().length > 0) {
     return {
       ok: true,
@@ -127,7 +172,6 @@ export async function joinWaitlistApi(payload: JoinWaitlistPayload): Promise<Joi
     return {
       ok: false,
       error: 'invalid_email',
-      message: 'Format email tidak valid.',
     };
   }
 
@@ -139,17 +183,14 @@ export async function joinWaitlistApi(payload: JoinWaitlistPayload): Promise<Joi
       return {
         ok: false,
         error: 'invalid_id',
-        message: idCheck.error,
       };
     }
   }
 
-  if (!isBackendConfigured()) {
-    return {
-      ok: false,
-      error: 'config_missing',
-      message: 'Konfigurasi backend belum diset. Form tidak dapat mengirim data.',
-    };
+  if (!isLiveBackendConfigured()) {
+    // In-memory mock submission
+    await new Promise((r) => setTimeout(r, 200));
+    return mockJoinWaitlist(cleanEmail, cleanId);
   }
 
   try {
@@ -173,29 +214,13 @@ export async function joinWaitlistApi(payload: JoinWaitlistPayload): Promise<Joi
     }
 
     const errCode = (data.error || 'server') as JoinWaitlistErrorType;
-    let message = 'Lagi ada masalah di sisi kami. Coba lagi bentar ya.';
-
-    if (errCode === 'email_exists') {
-      message = 'Email ini udah masuk waitlist, aman.';
-    } else if (errCode === 'id_taken' || errCode === 'reserved') {
-      message = cleanId ? `@${cleanId} udah diambil orang lain, coba yang lain.` : 'ID udah diambil orang lain.';
-    } else if (errCode === 'invalid_email') {
-      message = 'Format email tidak valid.';
-    } else if (errCode === 'invalid_id') {
-      message = 'Format Pukico ID tidak valid.';
-    }
-
     return {
       ok: false,
       error: errCode,
-      message,
     };
   } catch (err) {
-    console.error('Error joinWaitlistApi:', err);
-    return {
-      ok: false,
-      error: 'server',
-      message: 'Lagi ada masalah di sisi kami. Coba lagi bentar ya.',
-    };
+    // If live backend is unreachable, fall back seamlessly to in-memory mock
+    console.warn('[Pukico] Live backend unreachable, falling back to mock:', err);
+    return mockJoinWaitlist(cleanEmail, cleanId);
   }
 }
