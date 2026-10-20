@@ -124,8 +124,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                       placeholder="andika"
                       autoCapitalize="none"
                       autoCorrect="off"
+                      autoComplete="off"
+                      enterKeyHint="go"
                       spellCheck="false"
-                      className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#DBE6FF] text-[#3B4455] placeholder:text-[#5B6577]/60 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent transition-all"
+                      className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#DBE6FF] text-[#3B4455] placeholder:text-[#5B6577]/60 text-base sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent transition-all"
                       aria-label="Ketik Pukico ID yang mau dicek"
                     />
                   </div>
@@ -142,7 +144,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                     <button
                       type="submit"
                       disabled={status === 'checking'}
-                      className="min-h-[48px] px-6 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
+                      className="min-h-[48px] px-6 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] disabled:bg-[#0052FF]/40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
                     >
                       {status === 'checking' ? 'Mengecek...' : 'Cek ID kamu'}
                     </button>
@@ -189,7 +191,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
 
               {/* Small fine-print text below input */}
               <p className="mt-3 text-xs text-[#5B6577] leading-relaxed">
-                ID yang kamu amanin di waitlist dikunci buat kamu pas beta dibuka. Tapi klaim finalnya tetap lewat proses resmi di aplikasi.
+                ID yang kamu amanin di waitlist dikunci buat kamu. Klaim finalnya tetap lewat proses resmi di Pukico pas beta dibuka.
               </p>
             </div>
           </div>

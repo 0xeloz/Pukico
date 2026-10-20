@@ -225,7 +225,10 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                   value={email}
                   onChange={handleEmailChange}
                   placeholder="kamu@email.com"
-                  className="mt-1.5 w-full min-h-[48px] px-3.5 py-2.5 rounded-xl bg-white border border-[#DBE6FF] text-[#3B4455] placeholder:text-[#5B6577]/60 text-sm focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent transition-all"
+                  autoComplete="email"
+                  inputMode="email"
+                  enterKeyHint="send"
+                  className="mt-1.5 w-full min-h-[48px] px-3.5 py-2.5 rounded-xl bg-white border border-[#DBE6FF] text-[#3B4455] placeholder:text-[#5B6577]/60 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent transition-all"
                 />
               </div>
 
@@ -255,8 +258,10 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                     placeholder="andika"
                     autoCapitalize="none"
                     autoCorrect="off"
+                    autoComplete="off"
+                    enterKeyHint="go"
                     spellCheck="false"
-                    className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#DBE6FF] text-[#3B4455] placeholder:text-[#5B6577]/60 text-sm focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent transition-all"
+                    className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#DBE6FF] text-[#3B4455] placeholder:text-[#5B6577]/60 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent transition-all"
                   />
                 </div>
 
@@ -308,7 +313,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
               <button
                 type="submit"
                 disabled={isSubmitting || !backendReady}
-                className="w-full min-h-[48px] px-6 py-3 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
+                className="w-full min-h-[48px] px-6 py-3 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] disabled:bg-[#0052FF]/40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
               >
                 {isSubmitting ? 'Mengirim data...' : 'Masuk Waitlist'}
               </button>

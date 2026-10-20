@@ -16,8 +16,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
           aria-label="Pukico Beranda"
         >
           <img
-            src="/pukico-logo.png"
-            alt="Pukico Logo"
+            src="/pukico-logo-112.png"
+            width={28}
+            height={28}
+            alt=""
             className="h-7 w-7 shrink-0 rounded-full"
           />
           <span className="text-xl font-bold tracking-tight text-[#0A0B0D]">
@@ -32,7 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
               href={DISCORD_INVITE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="min-h-[44px] px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-medium text-[#3B4455] hover:text-[#0A0B0D] bg-white hover:bg-[#EEF4FF] border border-[#DBE6FF] rounded-xl transition-colors inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2"
+              className="hidden sm:inline-flex min-h-[44px] px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-medium text-[#3B4455] hover:text-[#0A0B0D] bg-white hover:bg-[#EEF4FF] border border-[#DBE6FF] rounded-xl transition-colors items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2"
             >
               Gabung Discord
             </a>

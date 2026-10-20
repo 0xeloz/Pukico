@@ -14,18 +14,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- OpenGraph / Facebook -->
+    <!-- Canonical & OpenGraph / Facebook -->
+    <link rel="canonical" href="%VITE_SITE_URL%/" />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
     <meta property="og:title" content="Pukico – Kirim crypto semudah kirim duit ke temen" />
     <meta property="og:description" content="Wallet crypto buat pemula. Kirim dan terima pakai username (Pukico ID, contoh @andika), bukan alamat 0x yang panjang. Masuk waitlist sekarang." />
     <meta property="og:site_name" content="Pukico" />
-    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="id_ID" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Pukico – Kirim crypto semudah kirim duit ke temen" />
     <meta name="twitter:description" content="Wallet crypto buat pemula. Kirim dan terima pakai username (Pukico ID, contoh @andika), bukan alamat 0x yang panjang. Masuk waitlist sekarang." />
-    <meta name="twitter:image" content="/og-image.png" />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.png" />
+    <meta name="twitter:image:alt" content="Pukico" />
   </head>
   <body class="bg-white text-[#3B4455] antialiased font-sans selection:bg-[#EEF4FF] selection:text-[#0052FF]">
     <div id="root"></div>

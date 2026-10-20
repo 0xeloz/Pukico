@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
         {/* Left: Brand note */}
         <div className="text-center sm:text-left space-y-1">
           <p className="text-sm font-semibold text-[#0A0B0D]">
-            Pukico dibikin bareng komunitas.
+            Dibikin sambil dengerin masukan kalian di Discord.
           </p>
           <p className="text-xs text-[#5B6577]">
             Beta di Base Sepolia testnet. Bukan nasihat keuangan.

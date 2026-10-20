@@ -8,7 +8,7 @@ export const WhySection: React.FC = () => {
           {/* Asymmetric left: visual contrast between 0x and @username */}
           <div className="lg:col-span-5 order-2 lg:order-1 space-y-4">
             {/* The stressful 0x address block */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-[#E5E7EB] space-y-2.5">
+            <div className="p-4 sm:p-5 rounded-2xl bg-[#F3F4F6] border border-[#E5E7EB] space-y-2.5">
               <span className="text-xs font-semibold text-[#5B6577] block">
                 Cara lama
               </span>
@@ -41,7 +41,7 @@ export const WhySection: React.FC = () => {
             </h2>
             <div className="mt-5 space-y-4 text-base sm:text-lg text-[#3B4455] leading-relaxed">
               <p>
-                Bayangin harus ngetik 0x7a3F...c91B tiap mau transfer. Salah satu karakter aja, aset bisa nyasar dan gak bisa balik. Wajar banyak orang males mulai.
+                Wajar kalau banyak orang males mulai.
               </p>
               <p className="font-medium text-[#0A0B0D]">
                 Di Pukico, kamu cukup ketik @username. Kami cariin alamat aslinya, lalu kamu cek dulu sebelum kirim.

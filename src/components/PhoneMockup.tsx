@@ -6,11 +6,11 @@ export const PhoneMockup: React.FC = () => {
       {/* Device frame - flat with thin border, no shadow */}
       <div className="relative w-full max-w-[320px] sm:max-w-[340px] rounded-[32px] p-3 bg-white border border-[#DBE6FF]">
         {/* Screen inner container */}
-        <div className="relative rounded-[22px] bg-[#FAFCFF] border border-slate-100 overflow-hidden pt-5 pb-5 px-4 text-[#3B4455]">
+        <div className="relative rounded-[22px] bg-[#FFFFFF] border border-[#E5E7EB] overflow-hidden pt-5 pb-5 px-4 text-[#3B4455]">
           {/* Header */}
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
             <span className="text-xs font-bold tracking-tight text-[#0A0B0D]">Pukico</span>
-            <span className="text-[10px] font-medium text-[#5B6577] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+            <span className="text-[10px] font-medium text-[#5B6577] bg-[#F3F4F6] px-2 py-0.5 rounded-md border border-[#E5E7EB]">
               Base Sepolia
             </span>
           </div>
@@ -36,7 +36,7 @@ export const PhoneMockup: React.FC = () => {
             </div>
 
             {/* Amount input block */}
-            <div className="p-3 rounded-xl bg-white border border-slate-200">
+            <div className="p-3 rounded-xl bg-white border border-[#E5E7EB]">
               <span className="text-[10px] font-medium text-[#5B6577]">Jumlah kirim</span>
               <div className="flex items-baseline justify-between mt-1">
                 <span className="text-2xl font-bold tracking-tight text-[#0A0B0D] tabular-nums">15.00</span>
@@ -55,7 +55,7 @@ export const PhoneMockup: React.FC = () => {
                 <span>Jaringan</span>
                 <span className="font-medium text-[#3B4455]">Base Sepolia</span>
               </div>
-              <div className="flex justify-between items-center pt-1 border-t border-slate-100">
+              <div className="flex justify-between items-center pt-1 border-t border-[#E5E7EB]">
                 <span className="font-semibold text-[#3B4455]">Status</span>
                 <span className="text-[10px] font-semibold text-[#047857]">Siap dikonfirmasi</span>
               </div>
