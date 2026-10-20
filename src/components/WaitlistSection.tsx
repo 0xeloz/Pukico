@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Reveal } from './Reveal';
 import {
   sanitizeUsername,
   validateUsernameLocally,
@@ -21,6 +22,10 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
   const [idStatus, setIdStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'format_error'>('idle');
   const [idMessage, setIdMessage] = useState('');
 
+  // Retain last ID feedback message and status for smooth collapsing transition
+  const [lastIdMessage, setLastIdMessage] = useState('');
+  const [lastIdStatus, setLastIdStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'format_error'>('idle');
+
   // Submit states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -39,6 +44,15 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (idMessage) {
+      setLastIdMessage(idMessage);
+      setLastIdStatus(idStatus);
+    }
+  }, [idMessage, idStatus]);
+
+  const isIdFeedbackOpen = Boolean(idMessage);
 
   const triggerIdCheck = (idToTest: string) => {
     if (debounceTimerRef.current) {
@@ -175,19 +189,22 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
   return (
     <section id="waitlist" className="py-16 sm:py-24 bg-[#0052FF] scroll-mt-16 text-white">
       <div className="max-w-xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-8">
+        <Reveal delay={0} className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
             Masuk waitlist, amanin ID kamu.
           </h2>
-        </div>
+        </Reveal>
 
-        <div className="rounded-2xl p-6 sm:p-10 bg-white border border-[#DBE6FF] text-[#3B4455]">
+        <Reveal delay={100} className="rounded-2xl p-6 sm:p-10 bg-white border border-[#DBE6FF] text-[#3B4455]">
           {isSuccess ? (
-            /* Success State */
-            <div className="p-6 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#3B4455] space-y-3">
-              <h3 className="text-lg font-bold text-[#047857]">
-                Udah masuk.
-              </h3>
+            /* Success State - fade-up keyframe, scale-in green dot */
+            <div className="p-6 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#3B4455] space-y-3 animate-fade-up">
+              <div className="flex items-center gap-2.5">
+                <span className="w-3 h-3 rounded-full bg-[#10B981] shrink-0 animate-scale-in" aria-hidden="true" />
+                <h3 className="text-lg font-bold text-[#047857]">
+                  Udah masuk.
+                </h3>
+              </div>
               <p className="text-sm sm:text-base text-[#3B4455] leading-relaxed">
                 Kamu bakal kami kabarin pas beta dibuka. Biar gak ketinggalan, gabung Discord-nya sekarang.
               </p>
@@ -202,7 +219,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                     href={DISCORD_INVITE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="min-h-[44px] px-5 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] text-white text-sm font-semibold transition-colors inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
+                    className="btn min-h-[44px] px-5 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] text-white text-sm font-semibold inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
                   >
                     Gabung Discord
                   </a>
@@ -273,20 +290,36 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                   />
                 </div>
 
-                {/* ID live check feedback */}
-                {idMessage && (
-                  <p
-                    className={`mt-1.5 text-xs font-medium ${
-                      idStatus === 'available'
-                        ? 'text-[#047857]'
-                        : idStatus === 'taken'
-                        ? 'text-[#B45309]'
-                        : 'text-[#B91C1C]'
-                    }`}
-                  >
-                    {idMessage}
-                  </p>
-                )}
+                {/* ID live check feedback - always in DOM, smooth grid collapse */}
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className={`grid transition-[grid-template-rows] duration-[250ms] ${
+                    isIdFeedbackOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                  }`}
+                  style={{
+                    transitionTimingFunction: 'var(--ease-out)',
+                  }}
+                >
+                  <div className="overflow-hidden">
+                    <p
+                      style={{
+                        transitionTimingFunction: 'var(--ease-out)',
+                      }}
+                      className={`mt-1.5 text-xs font-medium transition-[opacity,transform] duration-[200ms] ${
+                        isIdFeedbackOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[6px]'
+                      } ${
+                        lastIdStatus === 'available'
+                          ? 'text-[#047857]'
+                          : lastIdStatus === 'taken'
+                          ? 'text-[#B45309]'
+                          : 'text-[#B91C1C]'
+                      }`}
+                    >
+                      {lastIdMessage}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Honeypot field (hidden from real users) */}
@@ -321,13 +354,13 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
               <button
                 type="submit"
                 disabled={isSubmitting || !backendReady}
-                className="w-full min-h-[48px] px-6 py-3 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] disabled:bg-[#0052FF]/40 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
+                className="btn w-full min-h-[48px] px-6 py-3 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] disabled:bg-[#0052FF]/40 disabled:cursor-not-allowed text-white text-sm font-semibold flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
               >
                 {isSubmitting ? 'Mengirim data...' : 'Masuk Waitlist'}
               </button>
             </form>
           )}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

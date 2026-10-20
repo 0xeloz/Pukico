@@ -1,4 +1,5 @@
 import React from 'react';
+import { Reveal } from './Reveal';
 
 const blocks = [
   {
@@ -19,17 +20,18 @@ export const DifferentiatorSection: React.FC = () => {
   return (
     <section className="py-16 sm:py-24 border-t border-[#E5E7EB] bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="max-w-2xl mb-10">
+        <Reveal className="max-w-2xl mb-10">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#0A0B0D] tracking-tight">
             Yang bikin beda
           </h2>
-        </div>
+        </Reveal>
 
         {/* 3 rows, title on left and description on right (desktop), stacked (mobile), separated by thin line */}
         <div className="divide-y divide-[#E5E7EB] border-y border-[#E5E7EB]">
-          {blocks.map((block) => (
-            <div
+          {blocks.map((block, idx) => (
+            <Reveal
               key={block.title}
+              delay={idx * 70}
               className="py-7 sm:py-8 grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-8 items-start"
             >
               <div className="md:col-span-5">
@@ -42,7 +44,7 @@ export const DifferentiatorSection: React.FC = () => {
                   {block.desc}
                 </p>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>

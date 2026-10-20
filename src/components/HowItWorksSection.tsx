@@ -1,4 +1,5 @@
 import React from 'react';
+import { Reveal } from './Reveal';
 
 const steps = [
   {
@@ -22,17 +23,18 @@ export const HowItWorksSection: React.FC = () => {
   return (
     <section className="py-16 sm:py-24 border-t border-[#DBE6FF] bg-[#EEF4FF]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="max-w-2xl mb-10">
+        <Reveal className="max-w-2xl mb-10">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#0A0B0D] tracking-tight">
             Cara kerjanya
           </h2>
-        </div>
+        </Reveal>
 
         {/* List separated by thin hairline border, small numbers in #0052FF */}
         <div className="divide-y divide-[#DBE6FF] border-y border-[#DBE6FF] max-w-3xl">
-          {steps.map((step) => (
-            <div
+          {steps.map((step, idx) => (
+            <Reveal
               key={step.number}
+              delay={idx * 70}
               className="py-6 flex items-start gap-5 sm:gap-6"
             >
               <span className="text-lg font-bold text-[#0052FF] tabular-nums shrink-0 pt-0.5">
@@ -46,7 +48,7 @@ export const HowItWorksSection: React.FC = () => {
                   {step.desc}
                 </p>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>

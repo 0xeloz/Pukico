@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Reveal } from './Reveal';
 
 interface FaqItem {
   q: string;
@@ -38,11 +39,11 @@ export const FaqSection: React.FC = () => {
   return (
     <section className="py-16 sm:py-24 border-t border-[#E5E7EB] bg-white">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        <div className="mb-10">
+        <Reveal delay={0} className="mb-10">
           <h2 className="text-2xl sm:text-3xl font-bold text-[#0A0B0D] tracking-tight">
             Yang sering ditanyain
           </h2>
-        </div>
+        </Reveal>
 
         {/* Separated by thin lines instead of cards */}
         <div className="divide-y divide-[#E5E7EB] border-y border-[#E5E7EB]">
@@ -52,7 +53,11 @@ export const FaqSection: React.FC = () => {
             const panelId = `faq-panel-${idx}`;
 
             return (
-              <div key={faq.q} className="py-2">
+              <Reveal
+                key={faq.q}
+                delay={idx * 70}
+                className="py-2"
+              >
                 <button
                   id={buttonId}
                   type="button"
@@ -63,24 +68,46 @@ export const FaqSection: React.FC = () => {
                 >
                   <span>{faq.q}</span>
                   <span
-                    className="text-xl font-bold text-[#0052FF] shrink-0 w-6 text-center select-none"
+                    className={`text-xl font-bold text-[#0052FF] shrink-0 w-6 text-center select-none inline-block transition-transform duration-[250ms] ${
+                      isOpen ? 'rotate-45' : 'rotate-0'
+                    }`}
+                    style={{
+                      transitionTimingFunction: 'var(--ease-out)',
+                    }}
                     aria-hidden="true"
                   >
-                    {isOpen ? '−' : '+'}
+                    +
                   </span>
                 </button>
 
-                {isOpen && (
-                  <div
-                    id={panelId}
-                    role="region"
-                    aria-labelledby={buttonId}
-                    className="pb-5 pt-1 text-sm sm:text-base text-[#3B4455] leading-relaxed"
-                  >
-                    <p>{faq.a}</p>
+                {/* Always in DOM, animated with grid-template-rows and opacity, inert and aria-hidden when closed */}
+                <div
+                  id={panelId}
+                  role="region"
+                  aria-labelledby={buttonId}
+                  aria-hidden={!isOpen}
+                  inert={!isOpen ? true : undefined}
+                  className={`grid transition-[grid-template-rows] duration-[300ms] ${
+                    isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                  }`}
+                  style={{
+                    transitionTimingFunction: 'var(--ease-out)',
+                  }}
+                >
+                  <div className="overflow-hidden">
+                    <div
+                      className={`pb-5 pt-1 text-sm sm:text-base text-[#3B4455] leading-relaxed transition-opacity duration-[300ms] ${
+                        isOpen ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      style={{
+                        transitionTimingFunction: 'var(--ease-out)',
+                      }}
+                    >
+                      <p>{faq.a}</p>
+                    </div>
                   </div>
-                )}
-              </div>
+                </div>
+              </Reveal>
             );
           })}
         </div>

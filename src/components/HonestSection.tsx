@@ -1,4 +1,5 @@
 import React from 'react';
+import { Reveal } from './Reveal';
 
 const honestPoints = [
   'Ini masih testnet. Semua aset di beta gak ada nilai uang aslinya.',
@@ -11,7 +12,7 @@ export const HonestSection: React.FC = () => {
   return (
     <section className="py-16 sm:py-20 border-t border-[#E5E7EB] bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <div className="rounded-2xl p-6 sm:p-10 bg-[#EEF4FF] border border-[#DBE6FF]">
+        <Reveal className="rounded-2xl p-6 sm:p-10 bg-[#EEF4FF] border border-[#DBE6FF]">
           <h2 className="text-xl sm:text-2xl font-bold text-[#0A0B0D] tracking-tight">
             Jujur dulu ya
           </h2>
@@ -30,7 +31,7 @@ export const HonestSection: React.FC = () => {
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
