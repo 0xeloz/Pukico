@@ -37,7 +37,7 @@ const StackedLabel: React.FC<StackedLabelProps> = ({ en, id, activeLang }) => {
 
 export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const { lang, setLang, t } = useT();
+  const { uiLang, setLang } = useT();
 
   useEffect(() => {
     let ticking = false;
@@ -60,6 +60,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
     };
   }, []);
 
+  const logoAriaLabel = uiLang === 'id' ? idTranslations.nav.logoAriaLabel : enMerged.nav.logoAriaLabel;
+
   return (
     <header
       className={`sticky top-0 z-40 w-full bg-white border-b transition-colors duration-200 ${
@@ -69,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-4">
         {/* Logo */}
         <a
-          href={lang === 'id' ? '/id' : '/'}
+          href={uiLang === 'id' ? '/id' : '/'}
           onClick={(e) => {
             if (e.button === 0 && !e.metaKey && !e.ctrlKey) {
               e.preventDefault();
@@ -77,7 +79,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
             }
           }}
           className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 rounded-md px-1 py-0.5 shrink-0"
-          aria-label={t.nav.logoAriaLabel}
+          aria-label={logoAriaLabel}
         >
           <img
             src="/pukico-logo-112.png"
@@ -103,7 +105,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
             <span
               className="absolute top-0.5 bottom-0.5 left-0.5 w-[44px] rounded-[10px] bg-[#EEF4FF] pointer-events-none transition-transform duration-[250ms]"
               style={{
-                transform: lang === 'en' ? 'translateX(0px)' : 'translateX(44px)',
+                transform: uiLang === 'en' ? 'translateX(0px)' : 'translateX(44px)',
                 transitionTimingFunction: 'var(--ease-out)',
               }}
               aria-hidden="true"
@@ -119,12 +121,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
                 }
               }}
               className={`relative z-10 w-[44px] h-[38px] flex items-center justify-center text-xs font-semibold rounded-[10px] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] ${
-                lang === 'en'
+                uiLang === 'en'
                   ? 'font-bold text-[#0052FF]'
                   : 'text-[#5B6577] hover:text-[#0A0B0D]'
               }`}
               aria-label="Switch to English"
-              aria-current={lang === 'en' ? 'page' : undefined}
+              aria-current={uiLang === 'en' ? 'page' : undefined}
             >
               EN
             </a>
@@ -139,12 +141,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
                 }
               }}
               className={`relative z-10 w-[44px] h-[38px] flex items-center justify-center text-xs font-semibold rounded-[10px] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] ${
-                lang === 'id'
+                uiLang === 'id'
                   ? 'font-bold text-[#0052FF]'
                   : 'text-[#5B6577] hover:text-[#0A0B0D]'
               }`}
               aria-label="Ganti ke Bahasa Indonesia"
-              aria-current={lang === 'id' ? 'page' : undefined}
+              aria-current={uiLang === 'id' ? 'page' : undefined}
             >
               ID
             </a>
@@ -160,7 +162,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
               <StackedLabel
                 en={enMerged.nav.joinDiscord}
                 id={idTranslations.nav.joinDiscord}
-                activeLang={lang}
+                activeLang={uiLang}
               />
             </a>
           )}
@@ -173,7 +175,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
             <StackedLabel
               en={enMerged.nav.joinWaitlist}
               id={idTranslations.nav.joinWaitlist}
-              activeLang={lang}
+              activeLang={uiLang}
             />
           </button>
         </div>

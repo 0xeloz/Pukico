@@ -36,6 +36,7 @@ export const enMerged: Translations = deepMergeTranslations(idTranslations, enTr
 
 interface LangContextType {
   lang: Language;
+  uiLang: Language;
   phase: TransitionPhase;
   t: Translations;
   setLang: (lang: Language) => void;
@@ -52,8 +53,25 @@ export function getLangFromPathname(pathname: string): Language {
   return 'en';
 }
 
+function getElementDocumentTop(el: HTMLElement): number {
+  let top = 0;
+  let current: HTMLElement | null = el;
+  while (current) {
+    top += current.offsetTop;
+    current = current.offsetParent as HTMLElement | null;
+  }
+  return top;
+}
+
 export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [lang, setLangState] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      return getLangFromPathname(window.location.pathname);
+    }
+    return 'en';
+  });
+
+  const [uiLang, setUiLang] = useState<Language>(() => {
     if (typeof window !== 'undefined') {
       return getLangFromPathname(window.location.pathname);
     }
@@ -73,11 +91,14 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const threshold = navHeight + 8;
     const mainEl = document.querySelector('main');
     if (!mainEl) return;
-    const children = Array.from(mainEl.children);
+    const children = Array.from(mainEl.children) as HTMLElement[];
     for (let i = 0; i < children.length; i++) {
-      const rect = children[i].getBoundingClientRect();
-      if (rect.bottom > threshold) {
-        scrollAnchorRef.current = { index: i, top: rect.top };
+      const child = children[i];
+      const docTop = getElementDocumentTop(child);
+      const topInViewport = docTop - window.scrollY;
+      const bottomInViewport = topInViewport + child.offsetHeight;
+      if (bottomInViewport > threshold) {
+        scrollAnchorRef.current = { index: i, top: topInViewport };
         return;
       }
     }
@@ -88,6 +109,9 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (nextLang === lang || phaseRef.current !== 'idle') {
       return;
     }
+
+    // Ubah uiLang seketika saat setLang dipanggil (sebelum delay 140ms)
+    setUiLang(nextLang);
 
     // b) Jika prefers-reduced-motion: langsung pushState dan setLangState, selesai
     const prefersReducedMotion =
@@ -122,11 +146,12 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
       timeoutInRef.current = setTimeout(() => {
         setPhase('idle');
         phaseRef.current = 'idle';
+        setUiLang(nextLang);
       }, 320);
     }, 140);
   };
 
-  // d) popstate (tombol back) tetap ganti bahasa langsung tanpa animasi
+  // d) popstate (tombol back) tetap ganti bahasa langsung tanpa animasi dan sinkronkan uiLang
   useEffect(() => {
     const handlePopState = () => {
       if (timeoutOutRef.current) clearTimeout(timeoutOutRef.current);
@@ -134,7 +159,9 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
       phaseRef.current = 'idle';
       setPhase('idle');
       scrollAnchorRef.current = null;
-      setLangState(getLangFromPathname(window.location.pathname));
+      const newLang = getLangFromPathname(window.location.pathname);
+      setUiLang(newLang);
+      setLangState(newLang);
     };
     window.addEventListener('popstate', handlePopState);
     return () => {
@@ -144,16 +171,18 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  // Jaga posisi scroll: setelah bahasa ter-commit, hitung selisih top dan scrollBy
+  // Jaga posisi scroll: setelah bahasa ter-commit, hitung posisi dokumen dari rantai offsetTop/offsetParent
+  // (tidak terpengaruh transform animasi), lalu bandingkan top di viewport dengan nilai yang disimpan
   useLayoutEffect(() => {
     if (scrollAnchorRef.current && scrollAnchorRef.current.index >= 0) {
       const mainEl = document.querySelector('main');
       if (mainEl) {
-        const children = Array.from(mainEl.children);
+        const children = Array.from(mainEl.children) as HTMLElement[];
         const targetChild = children[scrollAnchorRef.current.index];
         if (targetChild) {
-          const newTop = targetChild.getBoundingClientRect().top;
-          const diff = newTop - scrollAnchorRef.current.top;
+          const newDocTop = getElementDocumentTop(targetChild);
+          const newTopInViewport = newDocTop - window.scrollY;
+          const diff = newTopInViewport - scrollAnchorRef.current.top;
           if (Math.abs(diff) > 0.5) {
             window.scrollBy({ top: diff, behavior: 'instant' as ScrollBehavior });
           }
@@ -219,7 +248,7 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <LangContext.Provider value={{ lang, phase, t, setLang, format }}>
+    <LangContext.Provider value={{ lang, uiLang, phase, t, setLang, format }}>
       {children}
     </LangContext.Provider>
   );
