@@ -24,6 +24,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
   // Submit states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submittedWithId, setSubmittedWithId] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
   const backendReady = isBackendConfigured();
@@ -118,6 +119,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
 
     // Honeypot check: kalau terisi, tampilkan state sukses palsu langsung tanpa memanggil API
     if (websiteHoneypot && websiteHoneypot.trim().length > 0) {
+      setSubmittedWithId(Boolean(desiredId.trim()));
       setIsSuccess(true);
       return;
     }
@@ -157,6 +159,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
     setIsSubmitting(false);
 
     if (res.ok) {
+      setSubmittedWithId(Boolean(cleanId));
       setIsSuccess(true);
     } else {
       if (res.error === 'email_exists') {
@@ -188,6 +191,11 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
               <p className="text-sm sm:text-base text-[#3B4455] leading-relaxed">
                 Kamu bakal kami kabarin pas beta dibuka. Biar gak ketinggalan, gabung Discord-nya sekarang.
               </p>
+              {!submittedWithId && (
+                <p className="text-sm text-[#5B6577] leading-relaxed">
+                  Kamu belum amanin Pukico ID. Masih bisa kok: isi form ini lagi pakai email yang sama plus ID incaran kamu.
+                </p>
+              )}
               {DISCORD_INVITE_URL && (
                 <div className="pt-2">
                   <a
