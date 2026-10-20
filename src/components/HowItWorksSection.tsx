@@ -2,17 +2,17 @@ import React from 'react';
 
 const steps = [
   {
-    number: '01',
+    number: '1',
     title: 'Amanin Pukico ID',
     desc: 'Pilih username kamu. Sekali diklaim, gak bisa diganti atau dihapus.',
   },
   {
-    number: '02',
+    number: '2',
     title: 'Masuk pakai email',
     desc: 'Dompet kamu dibuat lewat Privy. Kami gak nyimpen private key kamu di database kami.',
   },
   {
-    number: '03',
+    number: '3',
     title: 'Kirim dan terima pakai @',
     desc: 'Alamat 0x tetap ada kalau kamu butuh buat kirim dari atau ke wallet lain.',
   },
@@ -20,32 +20,29 @@ const steps = [
 
 export const HowItWorksSection: React.FC = () => {
   return (
-    <section className="py-16 sm:py-24 border-t border-[#E2E8F0] bg-[#F0F9FF]/40">
+    <section className="py-16 sm:py-24 border-t border-[#E2E8F0] bg-[#F0F9FF]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="max-w-2xl">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0F172A] tracking-tight">
+        <div className="max-w-2xl mb-10">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2C3D51] tracking-tight">
             Cara kerjanya
           </h2>
-          <p className="mt-3 text-base text-slate-600">
-            Tiga langkah simpel tanpa perlu paham teknis blockchain yang rumit.
-          </p>
         </div>
 
-        {/* 3 vertical steps with large numbers, no icons */}
-        <div className="mt-12 space-y-6 sm:space-y-8 max-w-3xl">
+        {/* List separated by thin hairline border, small navy numbers 1 2 3 */}
+        <div className="divide-y divide-[#E2E8F0] border-y border-[#E2E8F0] max-w-3xl">
           {steps.map((step) => (
             <div
               key={step.number}
-              className="p-6 sm:p-7 rounded-2xl bg-white border border-[#BAE6FD] shadow-sm flex flex-col sm:flex-row sm:items-baseline gap-4 sm:gap-8 transition-shadow hover:shadow-md"
+              className="py-6 flex items-start gap-5 sm:gap-6"
             >
-              <div className="font-extrabold text-4xl sm:text-5xl text-[#38BDF8] tabular-nums shrink-0 select-none">
+              <span className="text-lg font-bold text-[#2C3D51] tabular-nums shrink-0 pt-0.5">
                 {step.number}
-              </div>
-              <div className="space-y-1.5">
-                <h3 className="text-lg sm:text-xl font-bold text-[#0F172A]">
+              </span>
+              <div className="space-y-1">
+                <h3 className="text-base sm:text-lg font-bold text-[#2C3D51]">
                   {step.title}
                 </h3>
-                <p className="text-sm sm:text-base text-[#1E293B]/80 leading-relaxed">
+                <p className="text-sm sm:text-base text-[#334155] leading-relaxed">
                   {step.desc}
                 </p>
               </div>

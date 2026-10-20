@@ -62,7 +62,6 @@ export async function checkUsernameApi(rawUsername: string): Promise<CheckUserna
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         apikey: SUPABASE_ANON_KEY,
       },
       body: JSON.stringify({ username: cleanUsername }),
@@ -107,8 +106,7 @@ export type JoinWaitlistErrorType =
   | 'invalid_id'
   | 'reserved'
   | 'server'
-  | 'config_missing'
-  | 'bot_detected';
+  | 'config_missing';
 
 export interface JoinWaitlistResult {
   ok: boolean;
@@ -117,12 +115,10 @@ export interface JoinWaitlistResult {
 }
 
 export async function joinWaitlistApi(payload: JoinWaitlistPayload): Promise<JoinWaitlistResult> {
-  // Honeypot check
+  // Honeypot check: kalau terisi, tampilkan state sukses palsu tanpa memanggil API
   if (payload.website && payload.website.trim().length > 0) {
     return {
-      ok: false,
-      error: 'bot_detected',
-      message: 'Deteksi pengiriman otomatis.',
+      ok: true,
     };
   }
 
@@ -161,7 +157,6 @@ export async function joinWaitlistApi(payload: JoinWaitlistPayload): Promise<Joi
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         apikey: SUPABASE_ANON_KEY,
       },
       body: JSON.stringify({

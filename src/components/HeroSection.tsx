@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { PhoneMockup } from './PhoneMockup';
 import { sanitizeUsername, validateUsernameLocally, checkUsernameApi } from '../services/api';
 import { isBackendConfigured } from '../config';
@@ -15,11 +15,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
   const [statusMsg, setStatusMsg] = useState('');
   const [checkedId, setCheckedId] = useState('');
 
+  const checkCountRef = useRef(0);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
     const clean = sanitizeUsername(raw);
     setInputVal(clean);
-    // Reset status when user starts typing again
+    // Invalidate in-flight checks and reset status
+    checkCountRef.current += 1;
     if (status !== 'idle') {
       setStatus('idle');
       setStatusMsg('');
@@ -49,10 +52,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
       return;
     }
 
+    const reqId = ++checkCountRef.current;
     setStatus('checking');
     setStatusMsg('');
 
     const res = await checkUsernameApi(clean);
+    if (reqId !== checkCountRef.current) {
+      return; // stale response
+    }
+
     setCheckedId(clean);
 
     if (res.available) {
@@ -77,31 +85,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
   };
 
   return (
-    <section className="relative pt-8 sm:pt-14 pb-16 sm:pb-24 overflow-hidden">
-      {/* Very subtle background light sky gradient wash */}
-      <div
-        className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(186,230,253,0.35),rgba(255,255,255,0))]"
-        aria-hidden="true"
-      />
-
+    <section className="relative pt-8 sm:pt-14 pb-16 sm:pb-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           {/* Left Column: Copy & Interactive Check */}
           <div className="lg:col-span-7 flex flex-col items-start">
-            {/* Badge / Kicker */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F0F9FF] border border-[#BAE6FD] text-xs font-semibold text-slate-700 mb-5">
-              <span>Lagi waitlist</span>
-              <span className="text-[#38BDF8]" aria-hidden="true">·</span>
-              <span>Beta di Base Sepolia (testnet)</span>
+            {/* Plain text kicker with green dot, no box */}
+            <div className="flex items-center gap-2 text-xs font-medium text-[#475569] mb-4">
+              <span className="w-2 h-2 rounded-full bg-[#10B981] shrink-0" aria-hidden="true" />
+              <span>Lagi waitlist · Beta di Base Sepolia (testnet)</span>
             </div>
 
-            {/* H1 */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#0F172A] leading-[1.15] text-balance">
+            {/* H1 - font-weight 700, tracking-tight, navy */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#2C3D51] leading-[1.15] text-balance">
               Kirim crypto semudah kirim duit ke temen.
             </h1>
 
             {/* Sub */}
-            <p className="mt-5 text-base sm:text-lg text-[#1E293B]/85 leading-relaxed max-w-xl">
+            <p className="mt-5 text-base sm:text-lg text-[#334155] leading-relaxed max-w-xl">
               Gak perlu hafalin alamat 0x yang panjangnya kayak kode rahasia. Cukup pakai Pukico ID, contohnya @andika, beres.
             </p>
 
@@ -112,7 +113,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                   <div className="relative flex-1">
                     <span
                       aria-hidden="true"
-                      className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-semibold text-base pointer-events-none select-none"
+                      className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#475569] font-semibold text-base pointer-events-none select-none"
                     >
                       @
                     </span>
@@ -124,7 +125,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                       autoCapitalize="none"
                       autoCorrect="off"
                       spellCheck="false"
-                      className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#BAE6FD] text-[#0F172A] placeholder:text-slate-400 text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:border-transparent transition-all shadow-sm"
+                      className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#BAE6FD] text-[#334155] placeholder:text-[#475569]/60 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:border-transparent transition-all"
                       aria-label="Ketik Pukico ID yang mau dicek"
                     />
                   </div>
@@ -133,7 +134,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                     <button
                       type="button"
                       onClick={handleClaim}
-                      className="min-h-[48px] px-6 py-2.5 rounded-xl bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#0369A1] text-white text-sm font-semibold transition-all shadow-sm flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0EA5E9]"
+                      className="min-h-[48px] px-6 py-2.5 rounded-xl bg-[#2C3D51] hover:bg-[#22303F] active:bg-[#1A2532] text-white text-sm font-semibold transition-colors flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0EA5E9]"
                     >
                       Amanin @{checkedId}
                     </button>
@@ -141,7 +142,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                     <button
                       type="submit"
                       disabled={status === 'checking'}
-                      className="min-h-[48px] px-6 py-2.5 rounded-xl bg-[#0EA5E9] hover:bg-[#0284C7] active:bg-[#0369A1] disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-semibold transition-all shadow-sm flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0EA5E9]"
+                      className="min-h-[48px] px-6 py-2.5 rounded-xl bg-[#2C3D51] hover:bg-[#22303F] active:bg-[#1A2532] disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0EA5E9]"
                     >
                       {status === 'checking' ? 'Mengecek...' : 'Cek ID kamu'}
                     </button>
@@ -152,21 +153,33 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
               {/* Status Message */}
               {statusMsg && (
                 <div
-                  className={`mt-3 text-xs sm:text-sm font-medium rounded-lg px-3 py-2 flex items-center justify-between gap-2 ${
+                  className={`mt-3 text-xs sm:text-sm font-medium rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 border ${
                     status === 'available'
-                      ? 'bg-emerald-50 text-[#10B981] border border-emerald-200'
+                      ? 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]'
                       : status === 'taken'
-                      ? 'bg-amber-50 text-[#F59E0B] border border-amber-200'
-                      : 'bg-red-50 text-[#EF4444] border border-red-200'
+                      ? 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A]'
+                      : 'bg-[#FEF2F2] text-[#B91C1C] border-[#FECACA]'
                   }`}
                   role="status"
                 >
-                  <span>{statusMsg}</span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full shrink-0 ${
+                        status === 'available'
+                          ? 'bg-[#10B981]'
+                          : status === 'taken'
+                          ? 'bg-[#F59E0B]'
+                          : 'bg-[#EF4444]'
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span>{statusMsg}</span>
+                  </div>
                   {status === 'available' && (
                     <button
                       type="button"
                       onClick={handleClaim}
-                      className="text-xs font-bold underline hover:no-underline text-emerald-800 shrink-0"
+                      className="text-xs font-bold underline hover:no-underline text-[#047857] shrink-0"
                     >
                       Klaim sekarang &darr;
                     </button>
@@ -175,7 +188,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
               )}
 
               {/* Small fine-print text below input */}
-              <p className="mt-3 text-xs text-slate-600 leading-relaxed">
+              <p className="mt-3 text-xs text-[#475569] leading-relaxed">
                 ID yang kamu amanin di waitlist dikunci buat kamu pas beta dibuka. Tapi klaim finalnya tetap lewat proses resmi di aplikasi.
               </p>
             </div>

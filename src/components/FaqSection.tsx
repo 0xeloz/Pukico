@@ -36,53 +36,37 @@ export const FaqSection: React.FC = () => {
   };
 
   return (
-    <section className="py-16 sm:py-24 border-t border-[#E2E8F0] bg-[#F0F9FF]/30">
+    <section className="py-16 sm:py-24 border-t border-[#E2E8F0] bg-white">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-            Pertanyaan yang sering ditanya
+        <div className="mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#2C3D51] tracking-tight">
+            Yang sering ditanyain
           </h2>
         </div>
 
-        <div className="space-y-3">
+        {/* Separated by thin lines instead of cards */}
+        <div className="divide-y divide-[#E2E8F0] border-y border-[#E2E8F0]">
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             const buttonId = `faq-btn-${idx}`;
             const panelId = `faq-panel-${idx}`;
 
             return (
-              <div
-                key={faq.q}
-                className="rounded-2xl bg-white border border-[#BAE6FD] overflow-hidden transition-all shadow-sm"
-              >
+              <div key={faq.q} className="py-2">
                 <button
                   id={buttonId}
                   type="button"
                   aria-expanded={isOpen}
                   aria-controls={panelId}
                   onClick={() => toggle(idx)}
-                  className="w-full min-h-[52px] px-5 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-[#0F172A] hover:text-[#0EA5E9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0EA5E9] transition-colors"
+                  className="w-full min-h-[52px] py-4 text-left flex items-center justify-between gap-4 font-bold text-base sm:text-lg text-[#2C3D51] hover:text-[#22303F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0EA5E9] rounded-md transition-colors"
                 >
                   <span>{faq.q}</span>
                   <span
-                    className={`w-6 h-6 rounded-full bg-[#F0F9FF] border border-[#BAE6FD] flex items-center justify-center shrink-0 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 text-[#0EA5E9]' : 'text-slate-500'
-                    }`}
+                    className="text-xl font-bold text-[#2C3D51] shrink-0 w-6 text-center select-none"
                     aria-hidden="true"
                   >
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2.5"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+                    {isOpen ? '−' : '+'}
                   </span>
                 </button>
 
@@ -91,7 +75,7 @@ export const FaqSection: React.FC = () => {
                     id={panelId}
                     role="region"
                     aria-labelledby={buttonId}
-                    className="px-5 pb-5 pt-1 text-sm sm:text-base text-[#1E293B]/85 leading-relaxed border-t border-slate-100"
+                    className="pb-5 pt-1 text-sm sm:text-base text-[#334155] leading-relaxed"
                   >
                     <p>{faq.a}</p>
                   </div>

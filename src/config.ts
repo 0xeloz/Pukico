@@ -5,8 +5,9 @@
 
 export const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || '').trim().replace(/\/+$/, '');
 export const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
-export const DISCORD_INVITE_URL = (import.meta.env.VITE_DISCORD_INVITE_URL || 'https://discord.gg/pukico').trim();
-export const X_URL = (import.meta.env.VITE_X_URL || 'https://x.com/pukico').trim();
+export const DISCORD_INVITE_URL = (import.meta.env.VITE_DISCORD_INVITE_URL || '').trim();
+export const X_URL = (import.meta.env.VITE_X_URL || '').trim();
+export const SITE_URL = (import.meta.env.VITE_SITE_URL || '').trim();
 
 export const isBackendConfigured = (): boolean => {
   const configured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
