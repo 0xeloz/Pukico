@@ -1,0 +1,6 @@
+{
+  "name": "Pukico",
+  "description": "Landing page waitlist Pukico - wallet crypto pemula pakai username di Base Sepolia testnet.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
