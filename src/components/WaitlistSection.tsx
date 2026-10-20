@@ -170,20 +170,22 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
   };
 
   return (
-    <section id="waitlist" className="py-16 sm:py-24 border-t border-[#E2E8F0] bg-white scroll-mt-16">
+    <section id="waitlist" className="py-16 sm:py-24 bg-[#0052FF] scroll-mt-16 text-white">
       <div className="max-w-xl mx-auto px-4 sm:px-6">
-        <div className="rounded-2xl p-6 sm:p-10 bg-white border border-[#BAE6FD]">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#2C3D51] tracking-tight">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
             Masuk waitlist, amanin ID kamu.
           </h2>
+        </div>
 
+        <div className="rounded-2xl p-6 sm:p-10 bg-white border border-[#DBE6FF] text-[#3B4455]">
           {isSuccess ? (
             /* Success State */
-            <div className="mt-6 p-6 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#334155] space-y-3">
+            <div className="p-6 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#3B4455] space-y-3">
               <h3 className="text-lg font-bold text-[#047857]">
                 Udah masuk.
               </h3>
-              <p className="text-sm sm:text-base text-[#334155] leading-relaxed">
+              <p className="text-sm sm:text-base text-[#3B4455] leading-relaxed">
                 Kamu bakal kami kabarin pas beta dibuka. Biar gak ketinggalan, gabung Discord-nya sekarang.
               </p>
               {DISCORD_INVITE_URL && (
@@ -192,7 +194,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                     href={DISCORD_INVITE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="min-h-[44px] px-5 py-2.5 rounded-xl bg-[#2C3D51] hover:bg-[#22303F] active:bg-[#1A2532] text-white text-sm font-semibold transition-colors inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0EA5E9]"
+                    className="min-h-[44px] px-5 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] text-white text-sm font-semibold transition-colors inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
                   >
                     Gabung Discord
                   </a>
@@ -201,7 +203,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
             </div>
           ) : (
             /* Form State */
-            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
               {!backendReady && (
                 <div className="p-3.5 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-xs text-[#B45309]">
                   <p className="font-semibold">Perhatian:</p>
@@ -213,7 +215,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
 
               {/* Email field (wajib) */}
               <div>
-                <label htmlFor="waitlist-email" className="block text-xs font-semibold text-[#334155]">
+                <label htmlFor="waitlist-email" className="block text-xs font-semibold text-[#3B4455]">
                   Email <span className="text-[#B91C1C]">*</span>
                 </label>
                 <input
@@ -223,25 +225,25 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                   value={email}
                   onChange={handleEmailChange}
                   placeholder="kamu@email.com"
-                  className="mt-1.5 w-full min-h-[48px] px-3.5 py-2.5 rounded-xl bg-white border border-[#BAE6FD] text-[#334155] placeholder:text-[#475569]/60 text-sm focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:border-transparent transition-all"
+                  className="mt-1.5 w-full min-h-[48px] px-3.5 py-2.5 rounded-xl bg-white border border-[#DBE6FF] text-[#3B4455] placeholder:text-[#5B6577]/60 text-sm focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent transition-all"
                 />
               </div>
 
               {/* Desired ID field (opsional) */}
               <div>
                 <div className="flex items-center justify-between">
-                  <label htmlFor="waitlist-id" className="block text-xs font-semibold text-[#334155]">
-                    Pukico ID incaran <span className="text-[#475569] font-normal">(opsional)</span>
+                  <label htmlFor="waitlist-id" className="block text-xs font-semibold text-[#3B4455]">
+                    Pukico ID incaran <span className="text-[#5B6577] font-normal">(opsional)</span>
                   </label>
                   {idStatus === 'checking' && (
-                    <span className="text-xs text-[#475569]">Mengecek...</span>
+                    <span className="text-xs text-[#5B6577]">Mengecek...</span>
                   )}
                 </div>
 
                 <div className="relative mt-1.5">
                   <span
                     aria-hidden="true"
-                    className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#475569] font-semibold text-sm pointer-events-none select-none"
+                    className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#5B6577] font-semibold text-sm pointer-events-none select-none"
                   >
                     @
                   </span>
@@ -254,7 +256,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                     autoCapitalize="none"
                     autoCorrect="off"
                     spellCheck="false"
-                    className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#BAE6FD] text-[#334155] placeholder:text-[#475569]/60 text-sm focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:border-transparent transition-all"
+                    className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#DBE6FF] text-[#3B4455] placeholder:text-[#5B6577]/60 text-sm focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent transition-all"
                   />
                 </div>
 
@@ -306,7 +308,7 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
               <button
                 type="submit"
                 disabled={isSubmitting || !backendReady}
-                className="w-full min-h-[48px] px-6 py-3 rounded-xl bg-[#2C3D51] hover:bg-[#22303F] active:bg-[#1A2532] disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0EA5E9]"
+                className="w-full min-h-[48px] px-6 py-3 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
               >
                 {isSubmitting ? 'Mengirim data...' : 'Masuk Waitlist'}
               </button>

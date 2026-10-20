@@ -85,24 +85,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
   };
 
   return (
-    <section className="relative pt-8 sm:pt-14 pb-16 sm:pb-24">
+    <section className="relative pt-8 sm:pt-14 pb-16 sm:pb-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           {/* Left Column: Copy & Interactive Check */}
           <div className="lg:col-span-7 flex flex-col items-start">
             {/* Plain text kicker with green dot, no box */}
-            <div className="flex items-center gap-2 text-xs font-medium text-[#475569] mb-4">
+            <div className="flex items-center gap-2 text-xs font-medium text-[#5B6577] mb-4">
               <span className="w-2 h-2 rounded-full bg-[#10B981] shrink-0" aria-hidden="true" />
               <span>Lagi waitlist · Beta di Base Sepolia (testnet)</span>
             </div>
 
-            {/* H1 - font-weight 700, tracking-tight, navy */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#2C3D51] leading-[1.15] text-balance">
-              Kirim crypto semudah kirim duit ke temen.
+            {/* H1 - font-weight 700, tracking-tight, with #0052FF highlight */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#0A0B0D] leading-[1.15] text-balance">
+              Kirim crypto <span className="text-[#0052FF]">semudah kirim duit ke temen</span>.
             </h1>
 
             {/* Sub */}
-            <p className="mt-5 text-base sm:text-lg text-[#334155] leading-relaxed max-w-xl">
+            <p className="mt-5 text-base sm:text-lg text-[#3B4455] leading-relaxed max-w-xl">
               Gak perlu hafalin alamat 0x yang panjangnya kayak kode rahasia. Cukup pakai Pukico ID, contohnya @andika, beres.
             </p>
 
@@ -113,7 +113,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                   <div className="relative flex-1">
                     <span
                       aria-hidden="true"
-                      className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#475569] font-semibold text-base pointer-events-none select-none"
+                      className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#5B6577] font-semibold text-base pointer-events-none select-none"
                     >
                       @
                     </span>
@@ -125,7 +125,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                       autoCapitalize="none"
                       autoCorrect="off"
                       spellCheck="false"
-                      className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#BAE6FD] text-[#334155] placeholder:text-[#475569]/60 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0EA5E9] focus:border-transparent transition-all"
+                      className="w-full min-h-[48px] pl-8 pr-3.5 py-2.5 rounded-xl bg-white border border-[#DBE6FF] text-[#3B4455] placeholder:text-[#5B6577]/60 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent transition-all"
                       aria-label="Ketik Pukico ID yang mau dicek"
                     />
                   </div>
@@ -134,7 +134,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                     <button
                       type="button"
                       onClick={handleClaim}
-                      className="min-h-[48px] px-6 py-2.5 rounded-xl bg-[#2C3D51] hover:bg-[#22303F] active:bg-[#1A2532] text-white text-sm font-semibold transition-colors flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0EA5E9]"
+                      className="min-h-[48px] px-6 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] text-white text-sm font-semibold transition-colors flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
                     >
                       Amanin @{checkedId}
                     </button>
@@ -142,7 +142,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                     <button
                       type="submit"
                       disabled={status === 'checking'}
-                      className="min-h-[48px] px-6 py-2.5 rounded-xl bg-[#2C3D51] hover:bg-[#22303F] active:bg-[#1A2532] disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0EA5E9]"
+                      className="min-h-[48px] px-6 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
                     >
                       {status === 'checking' ? 'Mengecek...' : 'Cek ID kamu'}
                     </button>
@@ -188,7 +188,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
               )}
 
               {/* Small fine-print text below input */}
-              <p className="mt-3 text-xs text-[#475569] leading-relaxed">
+              <p className="mt-3 text-xs text-[#5B6577] leading-relaxed">
                 ID yang kamu amanin di waitlist dikunci buat kamu pas beta dibuka. Tapi klaim finalnya tetap lewat proses resmi di aplikasi.
               </p>
             </div>

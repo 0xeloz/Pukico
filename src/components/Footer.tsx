@@ -5,14 +5,14 @@ export const Footer: React.FC = () => {
   const hasLinks = Boolean(DISCORD_INVITE_URL || X_URL);
 
   return (
-    <footer className="border-t border-[#E2E8F0] bg-white py-12">
+    <footer className="border-t border-[#E5E7EB] bg-white py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
         {/* Left: Brand note */}
         <div className="text-center sm:text-left space-y-1">
-          <p className="text-sm font-semibold text-[#2C3D51]">
+          <p className="text-sm font-semibold text-[#0A0B0D]">
             Pukico dibikin bareng komunitas.
           </p>
-          <p className="text-xs text-[#475569]">
+          <p className="text-xs text-[#5B6577]">
             Beta di Base Sepolia testnet. Bukan nasihat keuangan.
           </p>
         </div>
@@ -25,7 +25,7 @@ export const Footer: React.FC = () => {
                 href={DISCORD_INVITE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="min-h-[44px] inline-flex items-center text-sm font-medium text-[#334155] hover:text-[#2C3D51] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0EA5E9] rounded-md px-2 py-1"
+                className="min-h-[44px] inline-flex items-center text-sm font-medium text-[#3B4455] hover:text-[#0052FF] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 rounded-md px-2 py-1"
               >
                 Discord
               </a>
@@ -35,7 +35,7 @@ export const Footer: React.FC = () => {
                 href={X_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="min-h-[44px] inline-flex items-center text-sm font-medium text-[#334155] hover:text-[#2C3D51] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0EA5E9] rounded-md px-2 py-1"
+                className="min-h-[44px] inline-flex items-center text-sm font-medium text-[#3B4455] hover:text-[#0052FF] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 rounded-md px-2 py-1"
               >
                 X
               </a>

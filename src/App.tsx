@@ -56,7 +56,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#334155] flex flex-col font-sans">
+    <div className="min-h-screen bg-white text-[#3B4455] flex flex-col font-sans">
       <Navbar onScrollToWaitlist={scrollToWaitlist} />
 
       <main className="flex-1">
