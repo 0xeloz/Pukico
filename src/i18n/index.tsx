@@ -1,9 +1,18 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { id as idTranslations, Translations } from './id';
 import { en as enTranslations } from './en';
 import { SITE_URL } from '../config';
 
 export type Language = 'en' | 'id';
+export type TransitionPhase = 'idle' | 'out' | 'in';
 
 function deepMergeTranslations(fallback: Translations, override: Partial<Translations>): Translations {
   const result = { ...fallback } as any;
@@ -23,10 +32,11 @@ function deepMergeTranslations(fallback: Translations, override: Partial<Transla
   return result as Translations;
 }
 
-const enMerged: Translations = deepMergeTranslations(idTranslations, enTranslations);
+export const enMerged: Translations = deepMergeTranslations(idTranslations, enTranslations);
 
 interface LangContextType {
   lang: Language;
+  phase: TransitionPhase;
   t: Translations;
   setLang: (lang: Language) => void;
   format: (template: string, params?: Record<string, string>) => string;
@@ -50,26 +60,108 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return 'en';
   });
 
+  const [phase, setPhase] = useState<TransitionPhase>('idle');
+  const phaseRef = useRef<TransitionPhase>('idle');
+  const timeoutOutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timeoutInRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollAnchorRef = useRef<{ index: number; top: number } | null>(null);
+
+  const saveScrollAnchor = () => {
+    if (typeof document === 'undefined') return;
+    const headerEl = document.querySelector('header');
+    const navHeight = headerEl ? headerEl.getBoundingClientRect().height : 64;
+    const threshold = navHeight + 8;
+    const mainEl = document.querySelector('main');
+    if (!mainEl) return;
+    const children = Array.from(mainEl.children);
+    for (let i = 0; i < children.length; i++) {
+      const rect = children[i].getBoundingClientRect();
+      if (rect.bottom > threshold) {
+        scrollAnchorRef.current = { index: i, top: rect.top };
+        return;
+      }
+    }
+  };
+
   const setLang = (nextLang: Language) => {
-    const currentLang = getLangFromPathname(window.location.pathname);
+    // a) Jika bahasa tujuan sama, atau phase bukan 'idle', abaikan klik
+    if (nextLang === lang || phaseRef.current !== 'idle') {
+      return;
+    }
+
+    // b) Jika prefers-reduced-motion: langsung pushState dan setLangState, selesai
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const targetPath = nextLang === 'id' ? '/id' : '/';
-    if (currentLang !== nextLang || window.location.pathname !== targetPath) {
+
+    if (prefersReducedMotion) {
       if (typeof window !== 'undefined') {
         window.history.pushState({}, '', targetPath);
       }
+      setLangState(nextLang);
+      return;
     }
-    setLangState(nextLang);
+
+    // c) Selain itu: simpan scroll anchor, phase='out'.
+    // Setelah 140ms: window.history.pushState, setLangState, phase='in'.
+    // Setelah 320ms lagi: phase='idle'.
+    saveScrollAnchor();
+    setPhase('out');
+    phaseRef.current = 'out';
+
+    timeoutOutRef.current = setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        window.history.pushState({}, '', targetPath);
+      }
+      setLangState(nextLang);
+      setPhase('in');
+      phaseRef.current = 'in';
+
+      timeoutInRef.current = setTimeout(() => {
+        setPhase('idle');
+        phaseRef.current = 'idle';
+      }, 320);
+    }, 140);
   };
 
+  // d) popstate (tombol back) tetap ganti bahasa langsung tanpa animasi
   useEffect(() => {
     const handlePopState = () => {
+      if (timeoutOutRef.current) clearTimeout(timeoutOutRef.current);
+      if (timeoutInRef.current) clearTimeout(timeoutInRef.current);
+      phaseRef.current = 'idle';
+      setPhase('idle');
+      scrollAnchorRef.current = null;
       setLangState(getLangFromPathname(window.location.pathname));
     };
     window.addEventListener('popstate', handlePopState);
     return () => {
       window.removeEventListener('popstate', handlePopState);
+      if (timeoutOutRef.current) clearTimeout(timeoutOutRef.current);
+      if (timeoutInRef.current) clearTimeout(timeoutInRef.current);
     };
   }, []);
+
+  // Jaga posisi scroll: setelah bahasa ter-commit, hitung selisih top dan scrollBy
+  useLayoutEffect(() => {
+    if (scrollAnchorRef.current && scrollAnchorRef.current.index >= 0) {
+      const mainEl = document.querySelector('main');
+      if (mainEl) {
+        const children = Array.from(mainEl.children);
+        const targetChild = children[scrollAnchorRef.current.index];
+        if (targetChild) {
+          const newTop = targetChild.getBoundingClientRect().top;
+          const diff = newTop - scrollAnchorRef.current.top;
+          if (Math.abs(diff) > 0.5) {
+            window.scrollBy({ top: diff, behavior: 'instant' as ScrollBehavior });
+          }
+        }
+      }
+      scrollAnchorRef.current = null;
+    }
+  }, [lang]);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -127,7 +219,7 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <LangContext.Provider value={{ lang, t, setLang, format }}>
+    <LangContext.Provider value={{ lang, phase, t, setLang, format }}>
       {children}
     </LangContext.Provider>
   );
@@ -140,4 +232,4 @@ export function useT() {
   }
   return context;
 }
-export { idTranslations, enMerged };
+export { idTranslations };
