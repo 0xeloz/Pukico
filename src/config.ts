@@ -27,6 +27,6 @@ export const isLiveBackendConfigured = (): boolean => {
 };
 
 export const isBackendConfigured = (): boolean => {
-  // Returns true to enable interactive waitlist and ID check via in-memory mock when live Supabase is not configured
-  return true;
+  return isLiveBackendConfigured() || Boolean(import.meta.env.DEV);
 };
+

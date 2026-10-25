@@ -75,9 +75,16 @@ export async function checkUsernameApi(rawUsername: string): Promise<CheckUserna
   }
 
   if (!isLiveBackendConfigured()) {
-    // In-memory mock response with realistic slight delay
-    await new Promise((r) => setTimeout(r, 150));
-    return mockCheckUsername(cleanUsername);
+    if (import.meta.env.DEV) {
+      // In-memory mock response with realistic slight delay
+      await new Promise((r) => setTimeout(r, 150));
+      return mockCheckUsername(cleanUsername);
+    }
+    return {
+      available: false,
+      reason: 'server',
+      cleanUsername,
+    };
   }
 
   try {
@@ -106,9 +113,16 @@ export async function checkUsernameApi(rawUsername: string): Promise<CheckUserna
       cleanUsername,
     };
   } catch (err) {
-    // If live backend is unreachable (e.g. invalid endpoint, network failure, or CORS), fall back seamlessly to in-memory mock
-    console.warn('[Pukico] Live backend unreachable, falling back to mock:', err);
-    return mockCheckUsername(cleanUsername);
+    if (import.meta.env.DEV) {
+      console.warn('[Pukico] Live backend unreachable, falling back to mock:', err);
+      return mockCheckUsername(cleanUsername);
+    }
+    console.error('[Pukico] Check username failed:', err);
+    return {
+      available: false,
+      reason: 'server',
+      cleanUsername,
+    };
   }
 }
 
@@ -188,9 +202,15 @@ export async function joinWaitlistApi(payload: JoinWaitlistPayload): Promise<Joi
   }
 
   if (!isLiveBackendConfigured()) {
-    // In-memory mock submission
-    await new Promise((r) => setTimeout(r, 200));
-    return mockJoinWaitlist(cleanEmail, cleanId);
+    if (import.meta.env.DEV) {
+      // In-memory mock submission
+      await new Promise((r) => setTimeout(r, 200));
+      return mockJoinWaitlist(cleanEmail, cleanId);
+    }
+    return {
+      ok: false,
+      error: 'config_missing',
+    };
   }
 
   try {
@@ -219,8 +239,14 @@ export async function joinWaitlistApi(payload: JoinWaitlistPayload): Promise<Joi
       error: errCode,
     };
   } catch (err) {
-    // If live backend is unreachable, fall back seamlessly to in-memory mock
-    console.warn('[Pukico] Live backend unreachable, falling back to mock:', err);
-    return mockJoinWaitlist(cleanEmail, cleanId);
+    if (import.meta.env.DEV) {
+      console.warn('[Pukico] Live backend unreachable, falling back to mock:', err);
+      return mockJoinWaitlist(cleanEmail, cleanId);
+    }
+    console.error('[Pukico] Join waitlist failed:', err);
+    return {
+      ok: false,
+      error: 'server',
+    };
   }
 }
