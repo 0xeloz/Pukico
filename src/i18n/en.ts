@@ -13,6 +13,10 @@ export const en: Translations = {
   },
   hero: {
     kicker: 'Waitlist open · Beta on Base Sepolia (testnet)',
+    closedBetaBadge: 'Closed Beta',
+    closedBetaText:
+      'Access is currently invite-only. Join the waitlist, or sign in at app.pukico.xyz if you already have an access code.',
+    haveAccessCode: 'Have an access code? Sign in',
     h1Prefix: 'Send crypto ',
     h1Highlight: 'as easily as paying a friend',
     h1Suffix: '.',
@@ -70,6 +74,7 @@ export const en: Translations = {
     title: 'Heads up',
     sub: 'Before you sign up, you should know:',
     points: [
+      'Pukico is currently running on the Base Sepolia testnet. No real money is involved.',
       'This is testnet only. Everything in the beta has no real-world value.',
       'Blockchain transactions still have network fees (gas).',
       'Transactions can take a while, and sometimes fail. That\'s why we show the status clearly.',
@@ -78,6 +83,10 @@ export const en: Translations = {
   },
   waitlist: {
     title: 'Join the waitlist, secure your ID.',
+    closedBetaBadge: 'Closed Beta',
+    closedBetaNotice:
+      'Access is currently invite-only. Join the waitlist, or sign in at app.pukico.xyz if you already have an access code.',
+    haveAccessCode: 'Have an access code? Sign in',
     emailLabel: 'Email',
     idLabel: 'Preferred Pukico ID',
     optional: '(optional)',
@@ -108,8 +117,12 @@ export const en: Translations = {
         a: 'A crypto wallet where you send and receive with a username instead of a long address.',
       },
       {
+        q: 'How do I get an access code?',
+        a: 'Join our waitlist and Discord. Invites are sent in batches via the waitlist email.',
+      },
+      {
         q: 'Is this real money?',
-        a: 'Not yet. The beta runs only on Base Sepolia testnet, and those assets have no value.',
+        a: 'Pukico is currently running on the Base Sepolia testnet. No real money is involved.',
       },
       {
         q: 'Can I change my Pukico ID?',

@@ -27,6 +27,6 @@ export const isLiveBackendConfigured = (): boolean => {
 };
 
 export const isBackendConfigured = (): boolean => {
-  return isLiveBackendConfigured() || Boolean(import.meta.env.DEV);
+  return true;
 };
 

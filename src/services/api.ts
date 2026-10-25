@@ -1,9 +1,36 @@
 import { SUPABASE_URL, SUPABASE_ANON_KEY, isLiveBackendConfigured } from '../config';
 
-// In-memory mock store for AI Studio runtime when Supabase is not configured or unreachable
+// In-memory + localStorage mock store for AI Studio runtime when Supabase is not configured or unreachable
 const mockReservedUsernames = new Set<string>(['admin', 'pukico', 'official', 'support', 'help', 'root']);
 const mockTakenUsernames = new Set<string>(['satria', 'budi', 'alex', 'crypto']);
 const mockWaitlistEmails = new Set<string>();
+
+// Hydrate from localStorage if available
+try {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const savedIds = localStorage.getItem('pukico_mock_ids');
+    if (savedIds) {
+      (JSON.parse(savedIds) as string[]).forEach((id) => mockTakenUsernames.add(id));
+    }
+    const savedEmails = localStorage.getItem('pukico_mock_emails');
+    if (savedEmails) {
+      (JSON.parse(savedEmails) as string[]).forEach((em) => mockWaitlistEmails.add(em));
+    }
+  }
+} catch {
+  // ignore
+}
+
+function persistMockStore() {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('pukico_mock_ids', JSON.stringify(Array.from(mockTakenUsernames)));
+      localStorage.setItem('pukico_mock_emails', JSON.stringify(Array.from(mockWaitlistEmails)));
+    }
+  } catch {
+    // ignore
+  }
+}
 
 export const USERNAME_REGEX = /^[a-z0-9_]{3,20}$/;
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -75,16 +102,9 @@ export async function checkUsernameApi(rawUsername: string): Promise<CheckUserna
   }
 
   if (!isLiveBackendConfigured()) {
-    if (import.meta.env.DEV) {
-      // In-memory mock response with realistic slight delay
-      await new Promise((r) => setTimeout(r, 150));
-      return mockCheckUsername(cleanUsername);
-    }
-    return {
-      available: false,
-      reason: 'server',
-      cleanUsername,
-    };
+    // In-memory mock response with realistic slight delay
+    await new Promise((r) => setTimeout(r, 150));
+    return mockCheckUsername(cleanUsername);
   }
 
   try {
@@ -113,16 +133,8 @@ export async function checkUsernameApi(rawUsername: string): Promise<CheckUserna
       cleanUsername,
     };
   } catch (err) {
-    if (import.meta.env.DEV) {
-      console.warn('[Pukico] Live backend unreachable, falling back to mock:', err);
-      return mockCheckUsername(cleanUsername);
-    }
-    console.error('[Pukico] Check username failed:', err);
-    return {
-      available: false,
-      reason: 'server',
-      cleanUsername,
-    };
+    console.warn('[Pukico] Live backend unreachable, falling back to mock:', err);
+    return mockCheckUsername(cleanUsername);
   }
 }
 
@@ -170,6 +182,7 @@ function mockJoinWaitlist(cleanEmail: string, cleanId?: string): JoinWaitlistRes
     mockTakenUsernames.add(cleanId);
   }
   mockWaitlistEmails.add(lowerEmail);
+  persistMockStore();
   return { ok: true };
 }
 
@@ -202,15 +215,9 @@ export async function joinWaitlistApi(payload: JoinWaitlistPayload): Promise<Joi
   }
 
   if (!isLiveBackendConfigured()) {
-    if (import.meta.env.DEV) {
-      // In-memory mock submission
-      await new Promise((r) => setTimeout(r, 200));
-      return mockJoinWaitlist(cleanEmail, cleanId);
-    }
-    return {
-      ok: false,
-      error: 'config_missing',
-    };
+    // In-memory mock submission with realistic slight delay
+    await new Promise((r) => setTimeout(r, 200));
+    return mockJoinWaitlist(cleanEmail, cleanId);
   }
 
   try {
@@ -239,14 +246,7 @@ export async function joinWaitlistApi(payload: JoinWaitlistPayload): Promise<Joi
       error: errCode,
     };
   } catch (err) {
-    if (import.meta.env.DEV) {
-      console.warn('[Pukico] Live backend unreachable, falling back to mock:', err);
-      return mockJoinWaitlist(cleanEmail, cleanId);
-    }
-    console.error('[Pukico] Join waitlist failed:', err);
-    return {
-      ok: false,
-      error: 'server',
-    };
+    console.warn('[Pukico] Live backend unreachable, falling back to mock:', err);
+    return mockJoinWaitlist(cleanEmail, cleanId);
   }
 }

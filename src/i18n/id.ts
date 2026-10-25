@@ -11,6 +11,10 @@ export const id = {
   },
   hero: {
     kicker: 'Lagi waitlist · Beta di Base Sepolia (testnet)',
+    closedBetaBadge: 'Closed Beta',
+    closedBetaText:
+      'Akses saat ini lewat undangan. Gabung waitlist, atau masuk di app.pukico.xyz jika kamu sudah punya kode akses.',
+    haveAccessCode: 'Punya kode akses? Masuk',
     h1Prefix: 'Kirim crypto ',
     h1Highlight: 'semudah kirim duit ke temen',
     h1Suffix: '.',
@@ -68,6 +72,7 @@ export const id = {
     title: 'Jujur dulu ya',
     sub: 'Sebelum daftar, kamu perlu tau ini:',
     points: [
+      'Pukico saat ini berjalan di testnet Base Sepolia. Tidak ada uang sungguhan yang terlibat.',
       'Ini masih testnet. Semua aset di beta gak ada nilai uang aslinya.',
       'Transaksi blockchain tetap ada biaya jaringan (gas).',
       'Transaksi bisa agak lama, bahkan bisa gagal. Makanya kami tampilin statusnya jelas.',
@@ -76,6 +81,10 @@ export const id = {
   },
   waitlist: {
     title: 'Masuk waitlist, amanin ID kamu.',
+    closedBetaBadge: 'Closed Beta',
+    closedBetaNotice:
+      'Akses saat ini lewat undangan. Gabung waitlist, atau masuk di app.pukico.xyz jika kamu sudah punya kode akses.',
+    haveAccessCode: 'Punya kode akses? Masuk',
     emailLabel: 'Email',
     idLabel: 'Pukico ID incaran',
     optional: '(opsional)',
@@ -106,8 +115,12 @@ export const id = {
         a: 'Wallet crypto yang bisa kirim dan terima pakai username, bukan alamat panjang.',
       },
       {
+        q: 'Bagaimana cara dapat kode akses?',
+        a: 'Gabung waitlist dan Discord kami. Undangan dikirim bertahap lewat email waitlist.',
+      },
+      {
         q: 'Beneran pakai duit?',
-        a: 'Belum. Beta cuma di Base Sepolia testnet, asetnya gak ada nilainya.',
+        a: 'Pukico saat ini berjalan di testnet Base Sepolia. Tidak ada uang sungguhan yang terlibat.',
       },
       {
         q: 'Pukico ID bisa diganti?',

@@ -243,9 +243,16 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
     <section id="waitlist" className="py-16 sm:py-24 bg-[#0052FF] scroll-mt-16 text-white">
       <div className="max-w-xl mx-auto px-4 sm:px-6">
         <Reveal delay={0} className="text-center mb-8">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white border border-white/20 text-xs font-semibold mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" aria-hidden="true" />
+            <span>{t.waitlist.closedBetaBadge}</span>
+          </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
             {t.waitlist.title}
           </h2>
+          <p className="mt-3 text-xs sm:text-sm text-white/90 max-w-md mx-auto leading-relaxed">
+            {t.waitlist.closedBetaNotice}
+          </p>
         </Reveal>
 
         <Reveal delay={100} className="rounded-2xl p-6 sm:p-10 bg-white border border-[#DBE6FF] text-[#3B4455]">
@@ -278,6 +285,15 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                   </a>
                 </div>
               )}
+              <div className="pt-2">
+                <a
+                  href="https://app.pukico.xyz"
+                  className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0052FF] hover:underline"
+                >
+                  <span>{t.waitlist.haveAccessCode}</span>
+                  <span aria-hidden="true">&rarr;</span>
+                </a>
+              </div>
             </div>
           ) : (
             /* Form State */
@@ -402,6 +418,17 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
               >
                 {isSubmitting ? t.waitlist.submitting : t.waitlist.button}
               </button>
+
+              {/* Secondary link for access code holders */}
+              <div className="text-center pt-2">
+                <a
+                  href="https://app.pukico.xyz"
+                  className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0052FF] hover:text-[#0042D6] hover:underline"
+                >
+                  <span>{t.waitlist.haveAccessCode}</span>
+                  <span aria-hidden="true">&rarr;</span>
+                </a>
+              </div>
             </form>
           )}
         </Reveal>

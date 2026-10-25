@@ -134,6 +134,27 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
               <p className="mt-5 text-base sm:text-lg text-[#3B4455] leading-relaxed max-w-xl">
                 {t.hero.sub}
               </p>
+
+              {/* Closed beta notice & secondary login link */}
+              <div className="mt-5 p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] max-w-lg">
+                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#EEF4FF] text-[#0052FF] border border-[#DBE6FF]">
+                    {t.hero.closedBetaBadge}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-[#5B6577] leading-relaxed">
+                  {t.hero.closedBetaText}
+                </p>
+                <div className="mt-2.5">
+                  <a
+                    href="https://app.pukico.xyz"
+                    className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0052FF] hover:text-[#0042D6] hover:underline"
+                  >
+                    <span>{t.hero.haveAccessCode}</span>
+                    <span aria-hidden="true">&rarr;</span>
+                  </a>
+                </div>
+              </div>
             </Reveal>
 
             {/* Interactive ID Checker - Reveal delay 240 */}
