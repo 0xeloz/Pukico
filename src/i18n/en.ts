@@ -3,8 +3,7 @@ import { Translations } from './id';
 export const en: Translations = {
   meta: {
     title: 'Pukico – Send crypto as easily as paying a friend',
-    description:
-      'A beginner-friendly crypto wallet. Send and receive with a username (Pukico ID, like @andika), not a long 0x address. Join the waitlist.',
+    description: 'Send crypto as easily as paying a friend.',
   },
   nav: {
     joinDiscord: 'Join Discord',
