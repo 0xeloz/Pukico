@@ -5,7 +5,7 @@ import { sanitizeUsername, validateUsernameLocally, checkUsernameApi } from '../
 import { useT } from '../i18n';
 
 interface HeroSectionProps {
-  onClaimId: (id: string) => void;
+  onClaimId?: (id: string) => void;
 }
 
 type CheckStatus = 'idle' | 'checking' | 'available' | 'taken' | 'format_error' | 'server_error';
@@ -100,12 +100,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
     }
   };
 
-  const handleClaim = () => {
-    if (checkedId) {
-      onClaimId(checkedId);
-    }
-  };
-
   return (
     <section className="relative pt-8 sm:pt-14 pb-16 sm:pb-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -135,7 +129,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                 {t.hero.sub}
               </p>
 
-              {/* Closed beta notice & secondary login link */}
+              {/* Open beta notice & direct app link */}
               <div className="mt-5 p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] max-w-lg">
                 <div className="flex flex-wrap items-center gap-2 mb-1.5">
                   <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#EEF4FF] text-[#0052FF] border border-[#DBE6FF]">
@@ -148,6 +142,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                 <div className="mt-2.5">
                   <a
                     href="https://app.pukico.xyz"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0052FF] hover:text-[#0042D6] hover:underline"
                   >
                     <span>{t.hero.haveAccessCode}</span>
@@ -159,7 +155,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
 
             {/* Interactive ID Checker - Reveal delay 240 */}
             <Reveal delay={240} className="w-full max-w-lg mt-8">
-              <form onSubmit={status === 'available' ? (e) => { e.preventDefault(); handleClaim(); } : handleCheck}>
+              <form onSubmit={status === 'available' ? (e) => e.preventDefault() : handleCheck}>
                 <div className="flex flex-col sm:flex-row gap-2.5">
                   <div className="relative flex-1">
                     <span
@@ -184,13 +180,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                   </div>
 
                   {status === 'available' ? (
-                    <button
-                      type="button"
-                      onClick={handleClaim}
+                    <a
+                      href="https://app.pukico.xyz"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="btn min-h-[48px] px-6 py-2.5 rounded-xl bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] text-white text-sm font-semibold flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF]"
                     >
-                      {format(t.hero.claimButton, { id: checkedId })}
-                    </button>
+                      {t.hero.claimButton}
+                    </a>
                   ) : (
                     <button
                       type="submit"
@@ -243,13 +240,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onClaimId }) => {
                       <span>{lastStatusMsg}</span>
                     </div>
                     {lastStatus === 'available' && (
-                      <button
-                        type="button"
-                        onClick={handleClaim}
+                      <a
+                        href="https://app.pukico.xyz"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="btn text-xs font-bold underline hover:no-underline text-[#047857] shrink-0"
                       >
                         {t.hero.claimLink}
-                      </button>
+                      </a>
                     )}
                   </div>
                 </div>

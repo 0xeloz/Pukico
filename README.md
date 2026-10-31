@@ -2,7 +2,7 @@
 
 Pukico adalah aplikasi transfer USDC berbasis Pukico ID. Repository ini berisi aplikasi dan dokumentasi pengembangan.
 
-> Status produk: closed beta. Konfigurasi jaringan dan fitur yang tersedia harus diperiksa dari environment dan kode aktif.
+> Status produk: Open Beta Testnet. Konfigurasi jaringan dan fitur yang tersedia harus diperiksa dari environment dan kode aktif.
 
 ## Dokumentasi
 - [PRD](PRD.md) — kebutuhan dan kriteria penerimaan Request Money.

@@ -3,19 +3,19 @@ import { Translations } from './id';
 export const en: Translations = {
   meta: {
     title: 'Pukico – Send crypto as easily as paying a friend',
-    description: 'Send crypto as easily as paying a friend.',
+    description: 'Send crypto as easily as paying a friend. Try the testnet beta now.',
   },
   nav: {
     joinDiscord: 'Join Discord',
-    joinWaitlist: 'Join Waitlist',
+    joinWaitlist: 'Open App',
     logoAriaLabel: 'Pukico home',
   },
   hero: {
-    kicker: 'Waitlist open · Beta on Base Sepolia (testnet)',
-    closedBetaBadge: 'Closed Beta',
+    kicker: 'Open beta · Base Sepolia (testnet)',
+    closedBetaBadge: 'Open Beta Testnet',
     closedBetaText:
-      'Access is currently invite-only. Join the waitlist, or sign in at app.pukico.xyz if you already have an access code.',
-    haveAccessCode: 'Have an access code? Sign in',
+      'The beta is open with limited slots. Testnet tokens have no monetary value. Try it now at app.pukico.xyz.',
+    haveAccessCode: 'Open the app',
     h1Prefix: 'Send crypto ',
     h1Highlight: 'as easily as paying a friend',
     h1Suffix: '.',
@@ -24,8 +24,8 @@ export const en: Translations = {
     placeholder: 'andika',
     check: 'Check your ID',
     checking: 'Checking...',
-    claimButton: 'Secure @{id}',
-    claimLink: 'Claim now ↓',
+    claimButton: 'Claim in the app',
+    claimLink: 'Claim in the app',
     available: '@{id} is available!',
     taken: '@{id} is taken, try another',
     empty: 'Enter the Pukico ID you want to check.',
@@ -33,7 +33,7 @@ export const en: Translations = {
       'Invalid format. Use lowercase letters (a-z), numbers (0-9) and underscores (_), 3-20 characters.',
     serverError: 'Something went wrong on our side. Try again in a moment.',
     finePrint:
-      'An ID you secure on the waitlist is held for you. The final claim still goes through the official process in Pukico when the beta opens.',
+      'Claim your ID directly in the Pukico app while slots are available.',
   },
   why: {
     title: 'Wallet addresses are scary.',
@@ -47,7 +47,7 @@ export const en: Translations = {
   },
   how: {
     title: 'How it works',
-    step1Title: 'Secure your Pukico ID',
+    step1Title: 'Choose your Pukico ID',
     step1Desc:
       "Pick your username. Once claimed, it can't be changed or deleted.",
     step2Title: 'Sign in with email',
@@ -81,11 +81,11 @@ export const en: Translations = {
     ],
   },
   waitlist: {
-    title: 'Join the waitlist, secure your ID.',
-    closedBetaBadge: 'Closed Beta',
+    title: 'Slots full? Join the waitlist.',
+    closedBetaBadge: 'Open Beta Testnet',
     closedBetaNotice:
-      'Access is currently invite-only. Join the waitlist, or sign in at app.pukico.xyz if you already have an access code.',
-    haveAccessCode: 'Have an access code? Sign in',
+      "The beta is open with limited slots. Try it now at app.pukico.xyz. If slots are full, leave your email here and we'll notify you when more open.",
+    haveAccessCode: 'Open the app',
     emailLabel: 'Email',
     idLabel: 'Preferred Pukico ID',
     optional: '(optional)',
@@ -94,10 +94,10 @@ export const en: Translations = {
     submitting: 'Submitting...',
     successTitle: "You're in.",
     successText:
-      "We'll let you know when the beta opens. To stay in the loop, join the Discord now.",
+      "We'll notify you when new slots open. To stay in the loop, join the Discord now.",
     successButton: 'Join Discord',
     noIdNote:
-      "You haven't secured a Pukico ID yet. You still can: submit this form again with the same email plus the ID you want.",
+      "You haven't included a preferred Pukico ID yet. You still can: submit this form again with the same email plus the ID you want.",
     errors: {
       emailExists: "This email is already on the waitlist, you're good.",
       idTaken: '@{id} is already taken, try another.',
@@ -121,8 +121,8 @@ export const en: Translations = {
         a: 'A crypto wallet where you send and receive with a username instead of a long address.',
       },
       {
-        q: 'How do I get an access code?',
-        a: 'Join our waitlist and Discord. Invites are sent in batches via the waitlist email.',
+        q: 'How do I join the beta?',
+        a: 'The beta is open with limited slots, so you can jump right in at app.pukico.xyz. If slots are currently full, join the waitlist; new slots open gradually. If you have an access code, it can still be used.',
       },
       {
         q: 'Is this real money?',
@@ -137,8 +137,8 @@ export const en: Translations = {
         a: "You can recover access through login and Privy's recovery options. We'll test this properly in the beta.",
       },
       {
-        q: 'When does the beta open?',
-        a: 'No fixed date yet. Latest updates go on Discord.',
+        q: 'Is the beta already open?',
+        a: 'Yes, the testnet beta is now open to the public with limited slots at app.pukico.xyz.',
       },
     ],
   },

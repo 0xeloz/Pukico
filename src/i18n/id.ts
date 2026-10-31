@@ -2,19 +2,19 @@ export const id = {
   meta: {
     title: 'Pukico – Kirim crypto semudah kirim duit ke temen',
     description:
-      'Wallet crypto buat pemula. Kirim dan terima pakai username (Pukico ID, contoh @andika), bukan alamat 0x yang panjang. Masuk waitlist sekarang.',
+      'Wallet crypto buat pemula. Kirim dan terima pakai username (Pukico ID, contoh @andika), bukan alamat 0x yang panjang. Coba beta testnet sekarang.',
   },
   nav: {
     joinDiscord: 'Gabung Discord',
-    joinWaitlist: 'Masuk Waitlist',
+    joinWaitlist: 'Buka Aplikasi',
     logoAriaLabel: 'Pukico Beranda',
   },
   hero: {
-    kicker: 'Lagi waitlist · Beta di Base Sepolia (testnet)',
-    closedBetaBadge: 'Closed Beta',
+    kicker: 'Open Beta · Base Sepolia (testnet)',
+    closedBetaBadge: 'Open Beta Testnet',
     closedBetaText:
-      'Akses saat ini lewat undangan. Gabung waitlist, atau masuk di app.pukico.xyz jika kamu sudah punya kode akses.',
-    haveAccessCode: 'Punya kode akses? Masuk',
+      'Beta terbuka dengan kuota terbatas. Token testnet tidak bernilai uang. Langsung coba di app.pukico.xyz.',
+    haveAccessCode: 'Buka aplikasi',
     h1Prefix: 'Kirim crypto ',
     h1Highlight: 'semudah kirim duit ke temen',
     h1Suffix: '.',
@@ -23,8 +23,8 @@ export const id = {
     placeholder: 'andika',
     check: 'Cek ID kamu',
     checking: 'Mengecek...',
-    claimButton: 'Amanin @{id}',
-    claimLink: 'Klaim sekarang ↓',
+    claimButton: 'Klaim di aplikasi',
+    claimLink: 'Klaim di aplikasi',
     available: '@{id} tersedia!',
     taken: '@{id} udah diambil, coba yang lain',
     empty: 'Masukkan Pukico ID yang mau kamu cek.',
@@ -32,7 +32,7 @@ export const id = {
       'Format salah. Hanya boleh huruf kecil (a-z), angka (0-9), dan garis bawah (_), 3-20 karakter.',
     serverError: 'Lagi ada masalah di sisi kami. Coba lagi bentar ya.',
     finePrint:
-      'ID yang kamu amanin di waitlist dikunci buat kamu. Klaim finalnya tetap lewat proses resmi di Pukico pas beta dibuka.',
+      'Klaim ID dilakukan langsung di aplikasi Pukico selama slot tersedia.',
   },
   why: {
     title: 'Alamat wallet itu serem.',
@@ -46,7 +46,7 @@ export const id = {
   },
   how: {
     title: 'Cara kerjanya',
-    step1Title: 'Amanin Pukico ID',
+    step1Title: 'Pilih Pukico ID',
     step1Desc:
       'Pilih username kamu. Sekali diklaim, gak bisa diganti atau dihapus.',
     step2Title: 'Masuk pakai email',
@@ -80,11 +80,11 @@ export const id = {
     ],
   },
   waitlist: {
-    title: 'Masuk waitlist, amanin ID kamu.',
-    closedBetaBadge: 'Closed Beta',
+    title: 'Kuota penuh? Masuk waitlist.',
+    closedBetaBadge: 'Open Beta Testnet',
     closedBetaNotice:
-      'Akses saat ini lewat undangan. Gabung waitlist, atau masuk di app.pukico.xyz jika kamu sudah punya kode akses.',
-    haveAccessCode: 'Punya kode akses? Masuk',
+      'Beta terbuka dengan kuota terbatas. Langsung coba di app.pukico.xyz. Kalau kuota sedang penuh, tinggalkan emailmu di sini dan kami kabari saat slot dibuka.',
+    haveAccessCode: 'Buka aplikasi',
     emailLabel: 'Email',
     idLabel: 'Pukico ID incaran',
     optional: '(opsional)',
@@ -93,10 +93,10 @@ export const id = {
     submitting: 'Mengirim data...',
     successTitle: 'Udah masuk.',
     successText:
-      'Kamu bakal kami kabarin pas beta dibuka. Biar gak ketinggalan, gabung Discord-nya sekarang.',
+      'Kamu bakal kami kabarin saat slot baru dibuka. Biar gak ketinggalan, gabung Discord-nya sekarang.',
     successButton: 'Gabung Discord',
     noIdNote:
-      'Kamu belum amanin Pukico ID. Masih bisa kok: isi form ini lagi pakai email yang sama plus ID incaran kamu.',
+      'Kamu belum mencantumkan Pukico ID incaran. Masih bisa kok: isi form ini lagi pakai email yang sama plus ID incaran kamu.',
     errors: {
       emailExists: 'Email ini udah masuk waitlist, aman.',
       idTaken: '@{id} udah diambil orang lain, coba yang lain.',
@@ -120,8 +120,8 @@ export const id = {
         a: 'Wallet crypto yang bisa kirim dan terima pakai username, bukan alamat panjang.',
       },
       {
-        q: 'Bagaimana cara dapat kode akses?',
-        a: 'Gabung waitlist dan Discord kami. Undangan dikirim bertahap lewat email waitlist.',
+        q: 'Bagaimana cara ikut beta?',
+        a: 'Beta terbuka dengan kuota terbatas, jadi kamu bisa langsung masuk di app.pukico.xyz. Kalau kuota sedang penuh, gabung waitlist; slot baru dibuka bertahap. Kalau kamu punya kode akses, kode itu tetap bisa dipakai.',
       },
       {
         q: 'Beneran pakai duit?',
@@ -136,8 +136,8 @@ export const id = {
         a: 'Kamu bisa pulihin lewat login dan mekanisme pemulihan Privy. Kami bakal uji ini serius di beta.',
       },
       {
-        q: 'Kapan beta dibuka?',
-        a: 'Belum ada tanggal pasti. Kabar terbaru kami taruh di Discord.',
+        q: 'Apakah betanya sudah dibuka?',
+        a: 'Ya, beta testnet saat ini sudah dibuka untuk umum dengan kuota terbatas di app.pukico.xyz.',
       },
     ],
   },

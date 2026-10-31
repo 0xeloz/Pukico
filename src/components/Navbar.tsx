@@ -178,9 +178,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
             </a>
           )}
 
-          <button
-            type="button"
-            onClick={onScrollToWaitlist}
+          <a
+            href="https://app.pukico.xyz"
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn min-h-[44px] px-3 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-white bg-[#0052FF] hover:bg-[#0042D6] active:bg-[#0036B0] rounded-xl inline-flex items-center justify-center whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#0052FF] shrink-0"
           >
             <StackedLabel
@@ -188,7 +189,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
               id={idTranslations.nav.joinWaitlist}
               activeLang={uiLang}
             />
-          </button>
+          </a>
         </div>
       </div>
     </header>

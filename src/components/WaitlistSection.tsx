@@ -288,6 +288,8 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
               <div className="pt-2">
                 <a
                   href="https://app.pukico.xyz"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0052FF] hover:underline"
                 >
                   <span>{t.waitlist.haveAccessCode}</span>
@@ -450,10 +452,12 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
                 {t.waitlist.agreementPost}
               </p>
 
-              {/* Secondary link for access code holders */}
+              {/* Secondary link to app */}
               <div className="text-center pt-2">
                 <a
                   href="https://app.pukico.xyz"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#0052FF] hover:text-[#0042D6] hover:underline"
                 >
                   <span>{t.waitlist.haveAccessCode}</span>
