@@ -8,6 +8,7 @@ export const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').
 export const DISCORD_INVITE_URL = (import.meta.env.VITE_DISCORD_INVITE_URL || '').trim();
 export const X_URL = (import.meta.env.VITE_X_URL || '').trim();
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://pukico.xyz').trim().replace(/\/+$/, '');
+export const CONTACT_EMAIL: string = 'hello@pukico.xyz';
 
 export const isLiveBackendConfigured = (): boolean => {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return false;

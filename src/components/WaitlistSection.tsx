@@ -16,7 +16,7 @@ interface WaitlistSectionProps {
 }
 
 export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = '' }) => {
-  const { t, format } = useT();
+  const { t, format, uiLang, navigate } = useT();
   const [email, setEmail] = useState('');
   const [desiredId, setDesiredId] = useState(initialId);
   const [websiteHoneypot, setWebsiteHoneypot] = useState('');
@@ -418,6 +418,37 @@ export const WaitlistSection: React.FC<WaitlistSectionProps> = ({ initialId = ''
               >
                 {isSubmitting ? t.waitlist.submitting : t.waitlist.button}
               </button>
+
+              {/* Terms and Privacy Agreement */}
+              <p className="text-xs text-[#5B6577] text-center pt-2 leading-relaxed">
+                {t.waitlist.agreementPre}
+                <a
+                  href={uiLang === 'id' ? '/id/terms' : '/terms'}
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey) {
+                      e.preventDefault();
+                      navigate(uiLang === 'id' ? '/id/terms' : '/terms');
+                    }
+                  }}
+                  className="font-medium text-[#0052FF] underline hover:text-[#0042D6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] rounded"
+                >
+                  {t.waitlist.agreementTerms}
+                </a>
+                {t.waitlist.agreementAnd}
+                <a
+                  href={uiLang === 'id' ? '/id/privacy' : '/privacy'}
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey) {
+                      e.preventDefault();
+                      navigate(uiLang === 'id' ? '/id/privacy' : '/privacy');
+                    }
+                  }}
+                  className="font-medium text-[#0052FF] underline hover:text-[#0042D6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] rounded"
+                >
+                  {t.waitlist.agreementPrivacy}
+                </a>
+                {t.waitlist.agreementPost}
+              </p>
 
               {/* Secondary link for access code holders */}
               <div className="text-center pt-2">

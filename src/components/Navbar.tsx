@@ -37,7 +37,13 @@ const StackedLabel: React.FC<StackedLabelProps> = ({ en, id, activeLang }) => {
 
 export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const { uiLang, setLang } = useT();
+  const { uiLang, setLang, navigate, pathname } = useT();
+
+  const norm = (pathname || '').toLowerCase();
+  const isPrivacy = norm.includes('/privacy');
+  const isTerms = norm.includes('/terms');
+  const enHref = isPrivacy ? '/privacy' : isTerms ? '/terms' : '/';
+  const idHref = isPrivacy ? '/id/privacy' : isTerms ? '/id/terms' : '/id';
 
   useEffect(() => {
     let ticking = false;
@@ -75,7 +81,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
           onClick={(e) => {
             if (e.button === 0 && !e.metaKey && !e.ctrlKey) {
               e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              const homePath = uiLang === 'id' ? '/id' : '/';
+              if (isPrivacy || isTerms) {
+                navigate(homePath);
+              } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
             }
           }}
           className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0052FF] focus-visible:ring-offset-2 rounded-md px-1 py-0.5 shrink-0"
@@ -113,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
 
             {/* EN link */}
             <a
-              href="/"
+              href={enHref}
               onClick={(e) => {
                 if (e.button === 0 && !e.metaKey && !e.ctrlKey) {
                   e.preventDefault();
@@ -133,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScrollToWaitlist }) => {
 
             {/* ID link */}
             <a
-              href="/id"
+              href={idHref}
               onClick={(e) => {
                 if (e.button === 0 && !e.metaKey && !e.ctrlKey) {
                   e.preventDefault();

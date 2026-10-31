@@ -38,8 +38,10 @@ interface LangContextType {
   lang: Language;
   uiLang: Language;
   phase: TransitionPhase;
+  pathname: string;
   t: Translations;
   setLang: (lang: Language) => void;
+  navigate: (path: string) => void;
   format: (template: string, params?: Record<string, string>) => string;
 }
 
@@ -64,6 +66,13 @@ function getElementDocumentTop(el: HTMLElement): number {
 }
 
 export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [pathname, setPathname] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return window.location.pathname;
+    }
+    return '/';
+  });
+
   const [lang, setLangState] = useState<Language>(() => {
     if (typeof window !== 'undefined') {
       return getLangFromPathname(window.location.pathname);
@@ -104,6 +113,19 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const navigate = (nextPath: string) => {
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname !== nextPath) {
+        window.history.pushState({}, '', nextPath);
+      }
+      setPathname(nextPath);
+      const targetLang = getLangFromPathname(nextPath);
+      setUiLang(targetLang);
+      setLangState(targetLang);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  };
+
   const setLang = (nextLang: Language) => {
     // a) Jika bahasa tujuan sama, atau phase bukan 'idle', abaikan klik
     if (nextLang === lang || phaseRef.current !== 'idle') {
@@ -113,17 +135,23 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Ubah uiLang seketika saat setLang dipanggil (sebelum delay 140ms)
     setUiLang(nextLang);
 
-    // b) Jika prefers-reduced-motion: langsung pushState dan setLangState, selesai
+    // b) Tentukan targetPath sesuai subpath halaman aktif (/privacy, /terms, dsb.)
+    const norm = (pathname || '').toLowerCase();
+    const isPrivacy = norm.includes('/privacy');
+    const isTerms = norm.includes('/terms');
+    const sub = isPrivacy ? '/privacy' : isTerms ? '/terms' : '';
+    const targetPath = nextLang === 'id' ? (sub ? `/id${sub}` : '/id') : (sub || '/');
+
+    // Jika prefers-reduced-motion: langsung pushState dan setLangState, selesai
     const prefersReducedMotion =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const targetPath = nextLang === 'id' ? '/id' : '/';
 
     if (prefersReducedMotion) {
       if (typeof window !== 'undefined') {
         window.history.pushState({}, '', targetPath);
       }
+      setPathname(targetPath);
       setLangState(nextLang);
       return;
     }
@@ -139,6 +167,7 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (typeof window !== 'undefined') {
         window.history.pushState({}, '', targetPath);
       }
+      setPathname(targetPath);
       setLangState(nextLang);
       setPhase('in');
       phaseRef.current = 'in';
@@ -151,7 +180,7 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, 140);
   };
 
-  // d) popstate (tombol back) tetap ganti bahasa langsung tanpa animasi dan sinkronkan uiLang
+  // d) popstate (tombol back/forward) tetap ganti bahasa & route langsung tanpa animasi
   useEffect(() => {
     const handlePopState = () => {
       if (timeoutOutRef.current) clearTimeout(timeoutOutRef.current);
@@ -159,7 +188,9 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
       phaseRef.current = 'idle';
       setPhase('idle');
       scrollAnchorRef.current = null;
-      const newLang = getLangFromPathname(window.location.pathname);
+      const currentPath = window.location.pathname;
+      setPathname(currentPath);
+      const newLang = getLangFromPathname(currentPath);
       setUiLang(newLang);
       setLangState(newLang);
     };
@@ -201,7 +232,11 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // 2. Set <link rel="canonical">
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     const baseSiteUrl = (SITE_URL || '').replace(/\/+$/, '');
-    const canonicalPath = lang === 'id' ? '/id' : '/';
+    const norm = (pathname || '').toLowerCase();
+    const isPrivacy = norm.includes('/privacy');
+    const isTerms = norm.includes('/terms');
+    const sub = isPrivacy ? '/privacy' : isTerms ? '/terms' : '';
+    const canonicalPath = lang === 'id' ? (sub ? `/id${sub}` : '/id') : (sub || '/');
     const canonicalHref = baseSiteUrl ? `${baseSiteUrl}${canonicalPath}` : canonicalPath;
 
     if (canonical) {
@@ -210,29 +245,35 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // 3. Update titles & meta tags
     const currentT = lang === 'id' ? idTranslations : enMerged;
-    document.title = currentT.meta.title;
+    if (isPrivacy) {
+      document.title = `${currentT.privacy.title} – Pukico`;
+    } else if (isTerms) {
+      document.title = `${currentT.terms.title} – Pukico`;
+    } else {
+      document.title = currentT.meta.title;
+    }
 
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
-      metaDesc.setAttribute('content', currentT.meta.description);
+      metaDesc.setAttribute('content', isPrivacy ? currentT.privacy.title : isTerms ? currentT.terms.title : currentT.meta.description);
     }
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) {
-      ogTitle.setAttribute('content', currentT.meta.title);
+      ogTitle.setAttribute('content', document.title);
     }
     const ogDesc = document.querySelector('meta[property="og:description"]');
     if (ogDesc) {
-      ogDesc.setAttribute('content', currentT.meta.description);
+      ogDesc.setAttribute('content', isPrivacy ? currentT.privacy.title : isTerms ? currentT.terms.title : currentT.meta.description);
     }
     const twitterTitle = document.querySelector('meta[name="twitter:title"]');
     if (twitterTitle) {
-      twitterTitle.setAttribute('content', currentT.meta.title);
+      twitterTitle.setAttribute('content', document.title);
     }
     const twitterDesc = document.querySelector('meta[name="twitter:description"]');
     if (twitterDesc) {
-      twitterDesc.setAttribute('content', currentT.meta.description);
+      twitterDesc.setAttribute('content', isPrivacy ? currentT.privacy.title : isTerms ? currentT.terms.title : currentT.meta.description);
     }
-  }, [lang]);
+  }, [lang, pathname]);
 
   const t = useMemo(() => {
     return lang === 'id' ? idTranslations : enMerged;
@@ -248,7 +289,7 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <LangContext.Provider value={{ lang, uiLang, phase, t, setLang, format }}>
+    <LangContext.Provider value={{ lang, uiLang, phase, pathname, t, setLang, navigate, format }}>
       {children}
     </LangContext.Provider>
   );
