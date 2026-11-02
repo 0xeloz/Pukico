@@ -1,76 +1,108 @@
-# Keamanan Pukico
+# Keamanan Pukico Landing
 
-**Status:** Baseline pengembangan, bukan audit keamanan formal.
+**Status:** Diverifikasi terhadap kode commit `f582ae8` (2 November 2026). Halaman ini adalah situs publik tanpa autentikasi; permukaan serangannya kecil, tetapi kesalahan di sini langsung terlihat oleh calon pengguna.
 
-## Prinsip dasar
-Pukico menggunakan alur wallet non-custodial. Aplikasi tidak boleh meminta atau menyimpan private key pengguna. Membuat permintaan pembayaran tidak boleh memindahkan dana.
+## 1. Ruang lingkup
 
-## Autentikasi dan otorisasi
-- Verifikasi identitas pengguna di backend untuk setiap operasi yang memerlukan sesi.
-- ID pengguna yang dikirim frontend bukan bukti kepemilikan.
-- Jangan gunakan user-editable metadata sebagai dasar otorisasi.
-- Terapkan otorisasi per objek; login saja tidak berarti boleh membaca semua permintaan.
-- Menyembunyikan tombol bukan kontrol keamanan.
+Yang perlu dilindungi di repo ini:
 
-## Supabase dan RLS
-- Aktifkan RLS pada tabel di schema yang terekspos.
-- Batasi baris sesuai pemilik dan pihak yang berhak, bukan sekadar status login.
-- Pastikan policy UPDATE memiliki pemeriksaan `USING` dan `WITH CHECK` yang sesuai.
-- Jangan menonaktifkan RLS untuk mengatasi error.
-- Jangan mengekspos service-role key di browser atau variabel frontend.
-- Periksa grants, policies, fungsi database, view, dan Edge Function dengan hak istimewa.
+- Integritas data waitlist (email dan klaim Pukico ID).
+- Kepercayaan pengguna bahwa pendaftaran mereka benar-benar tersimpan.
+- Reputasi domain `pukico.xyz` sebagai asal tautan yang diarahkan ke `app.pukico.xyz`.
 
-## Request Money
-- Backend menetapkan pembuat dari identitas sesi terverifikasi.
-- Validasi nominal, penerima, jaringan, catatan, dan status di backend.
-- Jangan percaya `paid`, hash transaksi, atau nilai pembayaran dari klien tanpa verifikasi.
-- Tautan/QR bukan bukti otorisasi.
-- Membuka tautan tidak boleh memulai transfer.
-- Jangan menaruh token rahasia di URL.
-- Permintaan privat hanya boleh terlihat oleh pihak yang berhak.
+Yang **tidak** ada di sini: wallet, private key, token akses, atau transaksi. Kontrol transaksi didokumentasikan di repo dashboard (`Dashboard-Pukico/security.md`).
 
-## Verifikasi blockchain
-Sebelum menandai permintaan lunas, verifikasi:
-- Jaringan yang benar.
-- Receipt sukses.
-- Token USDC yang benar untuk jaringan itu.
-- Alamat penerima yang benar.
-- Nominal sesuai aturan pembayaran.
-- Hubungan transaksi dengan permintaan.
-- Hash/event tidak diproses berulang.
+## 2. Permukaan serangan
 
-Hash transaksi saja bukan bukti bahwa pembayaran berhasil. Pending bukan confirmed.
+| Permukaan | Risiko |
+| --- | --- |
+| `POST /functions/v1/check-username` | Enumerasi ID yang sudah dipakai; perlu rate limit di server |
+| `POST /functions/v1/join-waitlist` | Spam email, klaim ID massal |
+| Formulir waitlist | Input tidak valid, submit ganda |
+| Skrip redirect `/p/<kode>` | Kode dibaca dari URL dan ditempel ke origin lain |
+| Dependency frontend | Rantai pasokan tanpa lockfile |
 
-## Pembayaran ganda dan idempotensi
-- Cegah satu permintaan diselesaikan oleh transaksi yang tidak sesuai atau diproses berulang.
-- Tangani event/sinkronisasi yang sama lebih dari sekali.
-- Gunakan constraint database atau transaksi atomik yang sesuai.
-- Tangani pembayaran sukses di blockchain tetapi update database gagal.
-- Periksa transaksi sebelumnya sebelum meminta pengguna membayar lagi.
+Tidak ada cookie sesi, tidak ada endpoint yang mengembalikan data pengguna lain, dan tidak ada operasi tulis yang bisa dipanggil tanpa melewati formulir.
 
-## Input dan biaya
-- Gunakan integer token units untuk nominal.
-- Tolak nol, nilai negatif, NaN/Infinity, dan nilai di luar batas.
-- Gunakan presisi token dan jaringan yang benar.
-- Bedakan estimasi network fee dari biaya final.
-- Jangan tampilkan angka biaya yang belum tersedia sebagai angka pasti.
-- Jangan percaya nominal dari URL tanpa validasi terhadap data permintaan tersimpan.
+## 3. Kontrol yang sudah ada
 
-## Secrets dan logging
-- Simpan secret di environment backend yang sesuai.
-- Jangan log private key, access token, atau secret.
-- Hindari log data pengguna yang tidak diperlukan.
-- Jangan mengirim secret melalui tautan atau QR.
+- **Validasi klien** sebelum jaringan: `EMAIL_REGEX` (`^[^\s@]+@[^\s@]+\.[^\s@]+$`), `USERNAME_REGEX` (`^[a-z0-9_]{3,20}$`), penolakan input kosong, normalisasi (`sanitizeUsername`).
+- **Honeypot** field `website`: disembunyikan dengan `display: none` + `left: -9999px`, `aria-hidden`, `tabIndex={-1}`, `autoComplete="off"`. Bila terisi, klien langsung menjawab sukses tanpa memanggil server — bot tidak mendapat sinyal bahwa ia tertangkap.
+- **Submit ganda dicegah** selama permintaan berjalan (`isSubmitting` menonaktifkan tombol).
+- **Tidak ada secret di browser** selain anon key Supabase, yang memang dirancang publik.
+- **Header keamanan** di `vercel.json`: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (camera, microphone, geolocation, payment, usb dimatikan), `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`.
+- **`robots.txt`** melarang crawl `/p/`.
+- Pemindaian repo tidak menemukan token, private key, atau service-role key yang ter-commit.
 
-## Checklist sebelum deployment
-- [ ] RLS dan policy diuji untuk pemilik, penerima, dan pengguna tanpa hak.
-- [ ] Service-role key tidak ada di bundle frontend.
-- [ ] Edge Function memverifikasi autentikasi dan otorisasi.
-- [ ] Frontend tidak dapat menetapkan status paid sendiri.
-- [ ] Receipt, jaringan, token, penerima, dan nominal diverifikasi.
-- [ ] Sinkronisasi idempotent.
-- [ ] Kegagalan update database setelah transaksi sukses dapat dipulihkan.
-- [ ] Error tidak membocorkan secret atau detail internal.
-- [ ] Uji di Base Sepolia sebelum produksi.
+Catatan: validasi di klien hanya untuk UX. Server **wajib** mengulang validasi yang sama; repo ini tidak dapat membuktikan hal itu karena kedua Edge Function tidak ada di sini.
 
-Klaim keamanan harus didukung pemeriksaan kode, konfigurasi, policy, dan pengujian aktual.
+## 4. Risiko terbuka
+
+### L-01 — Sukses palsu saat backend gagal (kritis)
+
+`src/services/api.ts:135` dan `:248` menangkap kegagalan `fetch` lalu memanggil mock lokal, yang mengembalikan `{ ok: true }`. Mock ini dirancang untuk preview tanpa backend, tetapi tidak dibatasi pada mode pengembangan.
+
+Akibatnya, bila Supabase tidak dapat dihubungi — outage, URL salah, anon key kedaluwarsa, atau diblokir jaringan — pengguna melihat konfirmasi pendaftaran padahal tidak ada satu baris pun yang tersimpan. Untuk produk yang sedang mengumpulkan waitlist, ini kehilangan lead secara senyap sekaligus melanggar prinsip "jangan menutupi kegagalan dengan data simulasi".
+
+Perbaikan:
+
+1. Mock hanya aktif bila `import.meta.env.DEV` dan backend tidak dikonfigurasi.
+2. Pada build produksi, kegagalan jaringan harus menghasilkan error yang terlihat dengan tombol coba lagi.
+3. Idealnya tampilkan status backend di UI admin, bukan di UI pengguna.
+
+### L-02 — `isBackendConfigured()` selalu true (sedang)
+
+`src/config.ts:30` mengembalikan `true` tanpa syarat. Helper ini tidak memeriksa apa pun, sehingga setiap pemanggil yang mengandalkannya mendapat jawaban "backend siap" meski konfigurasi kosong. Hapus atau ganti dengan pemeriksaan `isLiveBackendConfigured()`.
+
+### L-03 — Tidak ada CSP (sedang)
+
+`vercel.json` tidak mengirim `Content-Security-Policy` sama sekali. Situs memuat skrip dari Google Fonts dan memiliki satu skrip inline di `index.html`, yang sebenarnya bisa dicakup policy ketat dengan hash atau nonce. Tanpa CSP, injeksi skrip pihak ketiga tidak dicegah browser.
+
+### L-04 — Tanpa lockfile (sedang)
+
+Tidak ada `package-lock.json`, sehingga dependency yang menentukan render halaman dan formulir bisa berbeda antar build. Tambahkan lockfile dan gunakan `npm ci`.
+
+### L-05 — Tautan `/p/<kode>` berakhir buntu (rendah)
+
+Skrip di `index.html:45` meneruskan `/p/<kode>` ke `https://app.pukico.xyz/#pay=<kode>`, tetapi dashboard belum mem-parse hash tersebut. Tidak ada kebocoran data — kode hanya berpindah origin lewat URL — tetapi tautan yang dibagikan pengguna tidak berfungsi sebagaimana dijanjikan, dan kode pembayaran (bila nanti sensitif) akan terlihat di history browser.
+
+### L-06 — Tidak ada pembatasan laju di sisi klien (info)
+
+Wajar, karena pembatasan laju harus di server. Pastikan `check-username` dan `join-waitlist` memilikinya, karena keduanya dapat dipanggil langsung tanpa melewati halaman.
+
+## 5. Data dan privasi
+
+- Yang dikumpulkan: email, Pukico ID yang diinginkan, waktu pendaftaran (diasumsikan, di server).
+- Tidak ada analytics, pixel, atau cookie pihak ketiga di kode.
+- Satu-satunya penyimpanan di browser adalah mock localStorage (`pukico_mock_ids`, `pukico_mock_emails`) yang hanya terisi di mode mock — dan itu sendiri masalah pada L-01.
+- Halaman privasi dan ketentuan harus konsisten dengan data yang benar-benar dikirim ke `join-waitlist`. Bila nanti ditambah analytics, perbarui keduanya.
+
+## 6. Checklist sebelum rilis
+
+- [ ] Mock fallback dinonaktifkan di build produksi (L-01).
+- [ ] Kegagalan jaringan ditampilkan sebagai error, bukan sukses.
+- [ ] `isBackendConfigured()` diperbaiki atau dihapus (L-02).
+- [ ] CSP ditambahkan dan ditegakkan (L-03).
+- [ ] Lockfile ditambahkan, build memakai `npm ci` (L-04).
+- [ ] `check-username` dan `join-waitlist` memvalidasi ulang input di server dan punya rate limit.
+- [ ] Honeypot diverifikasi menolak submit tanpa menyimpan data.
+- [x] Tidak ada secret yang ter-commit.
+- [x] Tidak ada data pengguna yang dikirim ke pihak ketiga.
+- [x] Header dasar (XFO, nosniff, referrer, permissions, HSTS) aktif.
+
+## 7. Risiko terbuka
+
+| ID | Tingkat | Ringkas |
+| --- | --- | --- |
+| L-01 | Kritis | Fallback mock melaporkan sukses saat backend gagal, termasuk di produksi |
+| L-02 | Sedang | `isBackendConfigured()` hardcoded `true` |
+| L-03 | Sedang | Tidak ada CSP |
+| L-04 | Sedang | Tanpa lockfile |
+| L-05 | Rendah | Tautan `/p/<kode>` tidak ditangani dashboard |
+| L-06 | Info | Rate limit hanya bisa ditegakkan di server |
+
+## 8. Pelaporan
+
+Jangan mempublikasikan langkah eksploitasi atau kredensial di issue publik. Gunakan kanal keamanan resmi Pukico; bila belum ada, siapkan sebelum membuka pelaporan publik.
+
+Dokumen ini catatan status, bukan jaminan keamanan.
