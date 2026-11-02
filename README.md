@@ -1,63 +1,88 @@
-# Pukico
+# Pukico Landing
 
-Pukico adalah aplikasi transfer USDC berbasis Pukico ID. Repository ini berisi aplikasi dan dokumentasi pengembangan.
+Landing page dan halaman waitlist Pukico. Repo ini **hanya** berisi situs publik; aplikasi produk ada di repo `Dashboard-Pukico` dan dijalankan di `https://app.pukico.xyz`.
 
-> Status produk: Open Beta Testnet. Konfigurasi jaringan dan fitur yang tersedia harus diperiksa dari environment dan kode aktif.
+> **Status:** open beta testnet. Yang dijanjikan halaman ini adalah akses ke dashboard testnet, bukan produk dengan dana nyata.
 
-## Dokumentasi
-- [PRD](PRD.md) — kebutuhan dan kriteria penerimaan Request Money.
-- [Arsitektur](arsitektur.md) — batas tanggung jawab frontend, backend, dan transaksi.
-- [Keamanan](security.md) — kontrol akses, verifikasi pembayaran, dan perlindungan secret.
-- [Design System](designsystem.md) — konsistensi UI dan bahasa antarmuka.
+Dokumen ini menggambarkan kode pada commit `f582ae8` (2 November 2026).
 
-## Konteks roadmap
-- Transfer USDC berbasis Pukico ID.
-- Recent Recipients.
-- Transaction Receipts.
-- Clear Fee Breakdown.
-- Request Money sebagai pengembangan berikutnya.
-- Incoming Payment Notifications berada di tahap roadmap berikutnya.
+## Isi repo
 
-Daftar ini adalah konteks perencanaan. Periksa kode dan hasil tes sebelum menganggap fitur siap produksi.
+| Bagian | Komponen |
+| --- | --- |
+| Navigasi | `Navbar` — tautan bagian, pemilih bahasa, CTA waitlist |
+| Hero | `HeroSection` — klaim Pukico ID, CTA ke waitlist |
+| Penjelasan produk | `WhySection`, `HowItWorksSection`, `DifferentiatorSection`, `HonestSection` |
+| Waitlist | `WaitlistSection` — email, Pukico ID opsional, honeypot |
+| FAQ | `FaqSection` |
+| Footer | `Footer` |
+| Halaman legal | `PrivacyPage`, `TermsPage` |
 
-## Prinsip pengembangan
-1. Audit kode aktual sebelum mengubah implementasi.
-2. Pertahankan arsitektur yang berjalan.
-3. Gunakan kembali alur Send untuk pembayaran.
-4. Jangan membuat wallet baru atau menyimpan private key.
-5. Status pembayaran harus didukung verifikasi on-chain.
-6. Terapkan RLS dan otorisasi backend.
-7. Uji di Base Sepolia sebelum rilis produksi.
-8. Jangan mengklaim build atau tes berhasil sebelum dijalankan.
+Seluruh halaman tersedia dalam bahasa Inggris dan Indonesia.
 
-## Stack yang diketahui
-- React
-- TypeScript
-- Vite
-- Privy
-- viem
-- Supabase dan Edge Functions
+## Alur waitlist
 
-Versi dependency, scripts, environment variables, dan perintah pengembangan harus mengikuti `package.json` serta konfigurasi repository aktif.
+1. Pengguna memasukkan email dan, opsional, Pukico ID yang diinginkan.
+2. ID dinormalisasi (`sanitizeUsername`: trim, buang `@`, lowercase) dan divalidasi lokal dengan pola `^[a-z0-9_]{3,20}$`.
+3. Ketersediaan ID diperiksa ke `POST /functions/v1/check-username`.
+4. Submit mengirim `{ email, desired_id, website }` ke `POST /functions/v1/join-waitlist`.
+5. Field `website` adalah honeypot: bila terisi, permintaan dijawab sukses tanpa disimpan.
+6. Hasil yang mungkin: `email_exists`, `id_taken`, `invalid_email`, `invalid_id`, `reserved`, `server`, `config_missing`.
 
-## Menjalankan proyek
-Periksa `package.json` pada aplikasi yang ingin dijalankan untuk mengetahui scripts yang tersedia. Jika scripts mendukungnya, alur umum:
+Bila ID sudah diketik di hero, nilainya dibawa ke formulir waitlist lewat state `claimedId` di `App.tsx`.
+
+> **Penting:** saat ini kedua panggilan API jatuh ke penyimpanan localStorage dan melaporkan sukses bila jaringan gagal, termasuk di build produksi. Artinya pengguna bisa melihat "berhasil" padahal tidak ada data tersimpan. Lihat [security.md](security.md) bagian L-01 sebelum merilis.
+
+## Stack
+
+React 19.0.1, TypeScript 7.0.2, Vite 8.3.0, Tailwind CSS 4.3.3. Tanpa router library dan tanpa `supabase-js` — semua panggilan memakai `fetch` ke Edge Functions.
 
 ```bash
-npm install
-npm run dev
-npm run lint
-npm run build
+npm run dev      # vite --port=3000 --host=0.0.0.0
+npm run build    # vite build
+npm run lint     # tsc --noEmit
+npm run preview
 ```
 
-Jangan memasukkan secret produksi ke repository.
+> Belum ada `package-lock.json`. Build belum reproducible; tambahkan lockfile sebelum rilis.
 
-## Request Money MVP
-MVP memungkinkan pengguna membuat permintaan USDC, membagikan tautan atau QR, lalu menerima pembayaran melalui alur Send yang ada.
+## Environment
 
-Membuat atau membuka permintaan tidak memindahkan dana. Status lunas hanya muncul setelah transaksi yang sesuai diverifikasi.
+| Variabel | Fungsi |
+| --- | --- |
+| `VITE_SUPABASE_URL` | Base URL Supabase untuk Edge Functions |
+| `VITE_SUPABASE_ANON_KEY` | Anon key untuk header `apikey` |
+| `VITE_SITE_URL` | URL kanonik situs, default `https://pukico.xyz` |
+| `VITE_X_URL` | Tautan profil X |
+| `VITE_DISCORD_INVITE_URL` | Tautan Discord, juga dipakai untuk klaim kode akses |
 
-Lihat [PRD.md](PRD.md).
+Bila `VITE_SUPABASE_URL` atau anon key kosong, atau masih bernilai placeholder, `isLiveBackendConfigured()` mengembalikan false dan aplikasi memakai mock lokal. Jangan biarkan kondisi itu terjadi di produksi.
 
-## Catatan dokumentasi
-Dokumen ini adalah fondasi kerja. Nama tabel, API, Edge Function, dan detail deployment yang belum diverifikasi ditandai sebagai usulan atau perlu diperiksa. Perbarui setelah implementasi selesai dan diuji.
+## Routing
+
+Tidak ada router library; `LangProvider` membaca `window.location.pathname` dan menangani `popstate`.
+
+| Path | Isi |
+| --- | --- |
+| `/` | Landing bahasa Inggris |
+| `/id` | Landing bahasa Indonesia |
+| `/privacy`, `/id/privacy` | Halaman privasi |
+| `/terms`, `/id/terms` | Halaman ketentuan |
+| `/p/<kode>` | Redirect ke `https://app.pukico.xyz/#pay=<kode>` (skrip inline di `index.html`) |
+
+Prefix `/id` menentukan bahasa, bukan query atau localStorage. Rewrite untuk semua path di atas ada di `vercel.json`.
+
+> `robots.txt` melarang crawl `/p/`, dan dashboard belum menangani hash `#pay=`. Tautan pembayaran saat ini berakhir di halaman utama aplikasi.
+
+## Yang tidak ada di repo ini
+
+- Aplikasi dashboard, wallet, dan seluruh alur transaksi.
+- Request Money — belum ada di dashboard maupun di sini.
+- Definisi Edge Function `check-username` dan `join-waitlist`; keduanya hanya dipanggil dari sini.
+
+## Dokumentasi
+
+- [arsitektur.md](arsitektur.md) — komponen, routing, dan kontrak API
+- [designsystem.md](designsystem.md) — token visual dan pola halaman
+- [security.md](security.md) — permukaan serangan situs publik dan risiko terbuka
+- PRD produk ada di repo dashboard: `Dashboard-Pukico/PRD.md`
